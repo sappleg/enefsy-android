@@ -1,0 +1,14 @@
+<resources>
+
+    <string name="app_name">Enefsy</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Enefsy</string>
+    <string name="facebook_button">Facebook</string>
+    <string name="twitter_button">Twitter</string>
+    <string name="foursquare_button">Foursquare</string>
+    <string name="fb_button_desc">Facebook check-in button</string>
+    <string name="tw_button_desc">Twitter tweet button</string>
+    <string name="fsq_button_desc">Foursquare check-in button</string>
+
+</resources>

@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+	<ImageButton
+    	android:id="@+id/facebook_button"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:src="@drawable/facebook_button"
+    	android:contentDescription="@string/fb_button_desc" />
+
+    <ImageButton
+        android:id="@+id/twitter_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/twitter_button"
+        android:contentDescription="@string/tw_button_desc" />
+
+    <ImageButton
+        android:id="@+id/foursquare_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/foursquare_button"
+        android:contentDescription="@string/fsq_button_desc" />
+
+</LinearLayout>
