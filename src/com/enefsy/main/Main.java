@@ -1,19 +1,21 @@
 package com.enefsy.main;
 
-/* Android packages */
-import android.net.Uri;
-import android.os.Bundle;
+/* Android package */
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.content.SharedPreferences;
 
-/* Facebook-specific packages */
-import com.facebook.android.*;
+/* Facebook package */
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
+import com.facebook.android.FacebookError;
 
 
 public class Main extends Activity implements DialogListener, OnClickListener {
@@ -28,43 +30,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
+        facebook_button.setOnClickListener(this);
         twitter_button = (ImageButton) findViewById(R.id.twitter_button);
+        twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
-
-        facebook_button.setOnClickListener(new OnClickListener() 
-        {
-
-        	public void onClick(View v) 
-        	{
-        		Main.this.onClick(v);
-        	}
-        });
-
-        twitter_button.setOnClickListener(new OnClickListener() 
-        {
-
-        	public void onClick(View v) 
-        	{
-        		Main.this.onClick(v);
-        	}
-        });
-
-        foursquare_button.setOnClickListener(new OnClickListener() 
-        {
-
-        	public void onClick(View v) 
-        	{
-        		Main.this.onClick(v);
-        	}
-        });
-
+        foursquare_button.setOnClickListener(this);
     }
-
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,44 +47,33 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         return true;
     }
     
-    
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         facebookClient.authorizeCallback(requestCode, resultCode, data);
     }
     
-    
     @Override
-    public void onError(DialogError e)
-    {
+    public void onError(DialogError e) {
         System.out.println("Error: " + e.getMessage());
     }
-
     
     @Override
-    public void onCancel()
-    {
+    public void onCancel() {
 		// TODO Auto-generated method stub
     }
     
-    
     @Override
-    public void onClick(View v)
-    {
-    	
+    public void onClick(View v) {
         /**********************************************************************
          * 								FACEBOOK
          *********************************************************************/
-        if (v == facebook_button)        	
-        {
+        if (v == facebook_button) {
         	facebookClient = new Facebook("287810317993311");        	
 
        		/* Attributes to check if user has granted permissions for facebook */
 //       		String FILENAME = "AndroidSSO_data";
        	    final SharedPreferences mPrefs;
-
        	    
             try {
         		/* Last updated: 7/24/2012
@@ -132,11 +96,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                     facebookClient.setAccessExpires(expires);
                 }
 
-
-                facebookClient.authorize(Main.this, new String[] { "publish_checkins, publish_stream" }, 
-                		
+                facebookClient.authorize(Main.this, new String[] { "publish_checkins, publish_stream" },
                 	new DialogListener() {
-
                     	@Override
                         public void onComplete(Bundle values) {
                             SharedPreferences.Editor editor = mPrefs.edit();
@@ -144,10 +105,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                             editor.putLong("access_expires", facebookClient.getAccessExpires());
                             editor.commit();
                             
-                	        if (!values.containsKey("post_id"))
-                	        {
-                	            try
-                	            {
+                	        if (!values.containsKey("post_id")) {
+                	            try {
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
                 	                parameters.putString("message", "Trying to turn Enefsy from an idea to a startup...");
@@ -155,13 +114,11 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	                parameters.putString("description", "checkin");
                 	                facebookClient.request("me/feed", parameters, "POST");
                 	            }
-                	            catch (Exception e)
-                	            {
+                	            catch (Exception e) {
                 	                // TODO: handle exception
                 	                System.out.println(e.getMessage());
                 	            }
                 	        }		
-
                         }
             
                         @Override
@@ -192,13 +149,11 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
-        
         /**********************************************************************
          * 								TWITTER
          *********************************************************************/
         /* The user clicks the Twitter button */
-        else if (v == twitter_button) 
-        {
+        else if (v == twitter_button) {
             String message = "Your message to post";
             try {
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
@@ -214,26 +169,22 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
-        
         /**********************************************************************
          * 								FOURSQUARE
          *********************************************************************/
         /* If the user clicks on the foursquare button */
-        else if (v == foursquare_button) 
-        {
+        else if (v == foursquare_button) {
             Intent intent = new Intent();
             intent.setData(Uri.parse("http://m.foursquare.com/user"));
             startActivity(intent);	
         }
     }
-
     
 	@Override
 	public void onComplete(Bundle values) {
 		// TODO Auto-generated method stub
 
 	}
-
 	
 	@Override
 	public void onFacebookError(FacebookError e) {
