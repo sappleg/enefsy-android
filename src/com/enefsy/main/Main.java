@@ -33,8 +33,11 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         setContentView(R.layout.main);
 
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
+        facebook_button.setOnClickListener(this);
         twitter_button = (ImageButton) findViewById(R.id.twitter_button);
+        twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
+        foursquare_button.setOnClickListener(this);
 
         facebook_button.setOnClickListener(new OnClickListener() {
         	public void onClick(View v) 
