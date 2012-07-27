@@ -52,25 +52,21 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     }
     
     @Override
-    public void onError(DialogError e)
-    {
+    public void onError(DialogError e) {
         System.out.println("Error: " + e.getMessage());
     }
     
     @Override
-    public void onCancel()
-    {
+    public void onCancel() {
 		// TODO Auto-generated method stub
     }
     
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         /**********************************************************************
          * 								FACEBOOK
          *********************************************************************/
-        if (v == facebook_button)        	
-        {
+        if (v == facebook_button) {
         	facebookClient = new Facebook("287810317993311");        	
 
        		/* Attributes to check if user has granted permissions for facebook */
@@ -107,10 +103,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                             editor.putLong("access_expires", facebookClient.getAccessExpires());
                             editor.commit();
                             
-                	        if (!values.containsKey("post_id"))
-                	        {
-                	            try
-                	            {
+                	        if (!values.containsKey("post_id")) {
+                	            try {
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
                 	                parameters.putString("message", "Enefsy automatic location-based status updates...again");
@@ -118,8 +112,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	                parameters.putString("description", "test test test");
                 	                facebookClient.request("me/feed", parameters, "POST");
                 	            }
-                	            catch (Exception e)
-                	            {
+                	            catch (Exception e) {
                 	                // TODO: handle exception
                 	                System.out.println(e.getMessage());
                 	            }
@@ -158,8 +151,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
          * 								TWITTER
          *********************************************************************/
         /* The user clicks the Twitter button */
-        else if (v == twitter_button) 
-        {
+        else if (v == twitter_button) {
             String message = "Your message to post";
             try {
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
@@ -179,8 +171,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
          * 								FOURSQUARE
          *********************************************************************/
         /* If the user clicks on the foursquare button */
-        else if (v == foursquare_button) 
-        {
+        else if (v == foursquare_button) {
             Intent intent = new Intent();
             intent.setData(Uri.parse("http://m.foursquare.com/user"));
             startActivity(intent);	
