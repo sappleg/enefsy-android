@@ -1,9 +1,6 @@
 package com.enefsy.main;
 
 /* Android package */
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,7 +16,6 @@ import android.widget.ImageButton;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
@@ -119,8 +115,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Enefsy automatic location-based status updates...again");
-                	                parameters.putString("place", "50937384449");
+                	                parameters.putString("message", "Enefsy automatic location-based status update");
+                	                parameters.putString("place", "233762670072788");
                 	                parameters.putString("description", "test test test");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", new PostRequestListener(), state);
                 	            }
@@ -200,35 +196,5 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	public void onFacebookError(FacebookError e) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	private class PostRequestListener implements RequestListener {
-	 
-		public void onComplete(String response, Object state) {
-			// TODO Auto-generated method stub
-		}
- 
-		@Override
-		public void onIOException(IOException e, Object state) {
-			// TODO Auto-generated method stub
-	 
-		}
-	 
-		public void onFacebookError(FacebookError e, Object state) {
-			// TODO Auto-generated method stub
-	 
-		}
-	
-		@Override
-		public void onFileNotFoundException(FileNotFoundException e, Object state) {
-			// TODO Auto-generated method stub
-			
-		}
-	
-		@Override
-		public void onMalformedURLException(MalformedURLException e, Object state) {
-			// TODO Auto-generated method stub
-			
-		}
 	}
 }
