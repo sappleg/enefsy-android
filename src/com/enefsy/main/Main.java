@@ -28,7 +28,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -38,27 +37,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
-/*
-        facebook_button.setOnClickListener(new OnClickListener() {
-        	public void onClick(View v) 
-        	{
-        		Main.this.onClick(v);
-        	}
-        });
-
-        twitter_button.setOnClickListener(new OnClickListener() {
-        	public void onClick(View v) 
-        	{
-        		Main.this.onClick(v);
-        	}
-        });
-
-        foursquare_button.setOnClickListener(new OnClickListener() {
-        	public void onClick(View v) 
-        	{
-        		Main.this.onClick(v);
-        	}
-        }); */
     }
     
     @Override
