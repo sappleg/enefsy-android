@@ -115,8 +115,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Enefsy automatic location-based status update");
-                	                parameters.putString("place", "233762670072788");
+                	                parameters.putString("message", "Just got home from a hard night at work");
+                	                parameters.putString("place", "178106272217011");
                 	                parameters.putString("description", "test test test");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", new PostRequestListener(), state);
                 	            }
