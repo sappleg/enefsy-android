@@ -36,35 +36,27 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button = (ImageButton) findViewById(R.id.twitter_button);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
 
-        facebook_button.setOnClickListener(new OnClickListener() 
-        {
-
+        facebook_button.setOnClickListener(new OnClickListener() {
         	public void onClick(View v) 
         	{
         		Main.this.onClick(v);
         	}
         });
 
-        twitter_button.setOnClickListener(new OnClickListener() 
-        {
-
+        twitter_button.setOnClickListener(new OnClickListener() {
         	public void onClick(View v) 
         	{
         		Main.this.onClick(v);
         	}
         });
 
-        foursquare_button.setOnClickListener(new OnClickListener() 
-        {
-
+        foursquare_button.setOnClickListener(new OnClickListener() {
         	public void onClick(View v) 
         	{
         		Main.this.onClick(v);
         	}
         });
-
     }
-
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,21 +64,17 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         return true;
     }
     
-    
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         facebookClient.authorizeCallback(requestCode, resultCode, data);
     }
-    
     
     @Override
     public void onError(DialogError e)
     {
         System.out.println("Error: " + e.getMessage());
     }
-
     
     @Override
     public void onCancel()
@@ -94,11 +82,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 		// TODO Auto-generated method stub
     }
     
-    
     @Override
     public void onClick(View v)
     {
-    	
         /**********************************************************************
          * 								FACEBOOK
          *********************************************************************/
@@ -109,7 +95,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
        		/* Attributes to check if user has granted permissions for facebook */
 //       		String FILENAME = "AndroidSSO_data";
        	    final SharedPreferences mPrefs;
-
        	    
             try {
         		/* Last updated: 7/24/2012
@@ -132,11 +117,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                     facebookClient.setAccessExpires(expires);
                 }
 
-
-                facebookClient.authorize(Main.this, new String[] { "publish_checkins, publish_stream" }, 
-                		
+                facebookClient.authorize(Main.this, new String[] { "publish_checkins, publish_stream" },
                 	new DialogListener() {
-
                     	@Override
                         public void onComplete(Bundle values) {
                             SharedPreferences.Editor editor = mPrefs.edit();
@@ -161,7 +143,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	                System.out.println(e.getMessage());
                 	            }
                 	        }		
-
                         }
             
                         @Override
@@ -192,7 +173,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
-        
         /**********************************************************************
          * 								TWITTER
          *********************************************************************/
@@ -214,7 +194,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
-        
         /**********************************************************************
          * 								FOURSQUARE
          *********************************************************************/
@@ -226,14 +205,12 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             startActivity(intent);	
         }
     }
-
     
 	@Override
 	public void onComplete(Bundle values) {
 		// TODO Auto-generated method stub
 
 	}
-
 	
 	@Override
 	public void onFacebookError(FacebookError e) {
