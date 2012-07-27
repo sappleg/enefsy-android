@@ -25,5 +25,12 @@
         android:layout_height="wrap_content"
         android:src="@drawable/foursquare_button"
         android:contentDescription="@string/fsq_button_desc" />
+    
+    <TextView 
+        android:id="@+id/uid_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="25sp" />
 
 </LinearLayout>

@@ -1,7 +1,6 @@
 package com.enefsy.main;
 
 /* Android package */
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +10,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 /* Facebook package */
 import com.facebook.android.AsyncFacebookRunner;
@@ -19,13 +19,21 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
-
 public class Main extends Activity implements DialogListener, OnClickListener {
 
 	/* Image buttons for front screen */
 	private ImageButton facebook_button;
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
+	
+	/* TextView object to hold display Unique ID from NFC tag */
+	private TextView mTextView;
+	
+	/* TagActivity object to pull Unique ID off of NFC tag */
+	private TagActivity tagActivity;
+	
+	/* Unique ID for Enefsy database */
+	private String uid;
 	
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
@@ -42,6 +50,13 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
+        
+        tagActivity = new TagActivity();
+        uid = tagActivity.getUID();
+        
+     // TextView that we'll use to output uid to screen
+        mTextView = (TextView) findViewById(R.id.uid_view);
+        mTextView.setText(uid);
     }
     
     @Override
