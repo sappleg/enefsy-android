@@ -1,19 +1,21 @@
 package com.enefsy.main;
 
-/* Android packages */
-import android.net.Uri;
-import android.os.Bundle;
+/* Android package */
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.content.SharedPreferences;
 
-/* Facebook-specific packages */
-import com.facebook.android.*;
+/* Facebook package */
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
+import com.facebook.android.FacebookError;
 
 
 public class Main extends Activity implements DialogListener, OnClickListener {
