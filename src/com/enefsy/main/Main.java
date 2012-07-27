@@ -150,9 +150,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            {
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Enefsy automatic location-based status updates...again");
-                	                parameters.putString("place", "50937384449");
-                	                parameters.putString("description", "test test test");
+                	                parameters.putString("message", "Trying to turn Enefsy from an idea to a startup...");
+                	                parameters.putString("place", "167456006610323");
+                	                parameters.putString("description", "checkin");
                 	                facebookClient.request("me/feed", parameters, "POST");
                 	            }
                 	            catch (Exception e)
