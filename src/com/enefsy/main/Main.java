@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcAdapter.CreateNdefMessageCallback;
-import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Menu;
@@ -27,7 +25,7 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
 @TargetApi(14)
-public class Main extends Activity implements DialogListener, OnClickListener, CreateNdefMessageCallback {
+public class Main extends Activity implements DialogListener, OnClickListener {
 
 	/* Image buttons for front screen */
 	private ImageButton facebook_button;
@@ -69,15 +67,6 @@ public class Main extends Activity implements DialogListener, OnClickListener, C
             finish();
             return;
         }
-        // Register callback
-        mNfcAdapter.setNdefPushMessageCallback(this, this);
-        
-//        tagActivity = new TagActivity();
-//        uid = tagActivity.getUID();
-//        
-//        //TextView that we'll use to output uid to screen
-//        mTextView = (TextView) findViewById(R.id.uid_view);
-//        mTextView.setText(uid);
     }
     
     @Override
@@ -232,12 +221,6 @@ public class Main extends Activity implements DialogListener, OnClickListener, C
 	public void onFacebookError(FacebookError e) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public NdefMessage createNdefMessage(NfcEvent event) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
     @Override
