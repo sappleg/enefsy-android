@@ -1,6 +1,7 @@
 package com.enefsy.main;
 
 /* Android package */
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
 /* Facebook package */
+import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -27,6 +29,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
+	private AsyncFacebookRunner asyncFacebookClient;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
          * 								FACEBOOK
          *********************************************************************/
         if (v == facebook_button) {
-        	facebookClient = new Facebook("287810317993311");        	
+        	facebookClient = new Facebook("287810317993311");
+        	asyncFacebookClient = new AsyncFacebookRunner(facebookClient);
 
        		/* Attributes to check if user has granted permissions for facebook */
 //       		String FILENAME = "AndroidSSO_data";
@@ -107,6 +111,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                             
                 	        if (!values.containsKey("post_id")) {
                 	            try {
+                	            	//RequestListener listener = new RequestListener();
+                	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
                 	                parameters.putString("message", "Trying to turn Enefsy from an idea to a startup...");
