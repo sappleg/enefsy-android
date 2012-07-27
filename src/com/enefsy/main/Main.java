@@ -1,16 +1,23 @@
 package com.enefsy.main;
 
 /* Android package */
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /* Facebook package */
 import com.facebook.android.AsyncFacebookRunner;
@@ -19,7 +26,8 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
-public class Main extends Activity implements DialogListener, OnClickListener {
+@TargetApi(14)
+public class Main extends Activity implements DialogListener, OnClickListener, CreateNdefMessageCallback {
 
 	/* Image buttons for front screen */
 	private ImageButton facebook_button;
@@ -27,17 +35,20 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton foursquare_button;
 	
 	/* TextView object to hold display Unique ID from NFC tag */
-	private TextView mTextView;
+	private TextView textView;
 	
 	/* TagActivity object to pull Unique ID off of NFC tag */
-	private TagActivity tagActivity;
+    //private TagActivity tagActivity;
 	
 	/* Unique ID for Enefsy database */
-	private String uid;
+	//private String uid;
 	
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
 	private AsyncFacebookRunner asyncFacebookClient;
+	
+    /* NFC Adapter to pull UID message from tag */
+	private NfcAdapter mNfcAdapter;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,12 +62,22 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
         
-        tagActivity = new TagActivity();
-        uid = tagActivity.getUID();
+        // Check for available NFC Adapter
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        // Register callback
+        mNfcAdapter.setNdefPushMessageCallback(this, this);
         
-     // TextView that we'll use to output uid to screen
-        mTextView = (TextView) findViewById(R.id.uid_view);
-        mTextView.setText(uid);
+//        tagActivity = new TagActivity();
+//        uid = tagActivity.getUID();
+//        
+//        //TextView that we'll use to output uid to screen
+//        mTextView = (TextView) findViewById(R.id.uid_view);
+//        mTextView.setText(uid);
     }
     
     @Override
@@ -212,4 +233,32 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public NdefMessage createNdefMessage(NfcEvent event) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            processIntent(getIntent());
+        }
+    }
+    
+    /**
+     * Parses the NDEF Message from the intent and prints to the TextView
+     */
+    void processIntent(Intent intent) {
+        textView = (TextView) findViewById(R.id.uid_view);
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+        textView.setText(new String(msg.getRecords()[0].getPayload()));
+    }
 }
