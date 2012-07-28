@@ -1,6 +1,7 @@
 package com.enefsy.main;
 
 /* Android package */
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -67,6 +68,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             finish();
             return;
         }
+        
+/*        Intent intent = getIntent();
+        
+        textView = (TextView) findViewById(R.id.uid_view);
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+        textView.setText(new String(msg.getRecords()[0].getPayload())); */
     }
     
     @Override
@@ -232,6 +243,12 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         }
     }
     
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
+    }
+
     /**
      * Parses the NDEF Message from the intent and prints to the TextView
      */
