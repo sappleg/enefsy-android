@@ -3,21 +3,30 @@ package com.enefsy.main;
 /* Android package */
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 /* Facebook package */
+import com.enefsy.foursquare.FoursquareApp;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
+import fi.foyt.foursquare.api.FoursquareApi;
+import fi.foyt.foursquare.api.FoursquareApiException;
+import fi.foyt.foursquare.api.Result;
+import fi.foyt.foursquare.api.entities.Checkin;
+import fi.foyt.foursquare.api.io.DefaultIOHandler;
 
 
 public class Main extends Activity implements DialogListener, OnClickListener {
@@ -26,11 +35,18 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton facebook_button;
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
-	
+
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
 	private AsyncFacebookRunner asyncFacebookClient;
-	
+	private FoursquareApi foursquareApi;
+
+	private FoursquareApp foursquareClient;
+	private static final String FOURSQUARE_CLIENT_ID = "4NOPZVJ4ILTBQLU1AYO2BX2QMUBCJCLL3RFF0UETEZOQW02W";
+	private static final String FOURSQUARE_CLIENT_SECRET = "UAE5UZZ0KMDPTWOSYHU1R1UA3JX4NJDHO1HY5HWL3TJHVPQ1";
+	private static final String FOURSQUARE_REDIRECT_URL = "http://www.enefsy.com";
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +58,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
+
     }
     
     @Override
@@ -76,7 +93,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         	asyncFacebookClient = new AsyncFacebookRunner(facebookClient);
 
        		/* Attributes to check if user has granted permissions for facebook */
-//       		String FILENAME = "AndroidSSO_data";
        	    final SharedPreferences mPrefs;
        	    
             try {
@@ -115,10 +131,18 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Trying to turn Enefsy from an idea to a startup...");
-                	                parameters.putString("place", "167456006610323");
-                	                parameters.putString("description", "checkin");
-                	                facebookClient.request("me/feed", parameters, "POST");
+                	                parameters.putString("message", "Enefsy automatic location-based status update");
+                	                parameters.putString("place", "233762670072788");
+                	                parameters.putString("description", "test test test");
+                	                asyncFacebookClient.request("me/feed", parameters, "POST", 
+                	                		new PostRequestListener(), state);
+                	                
+                	                Context context = getApplicationContext();
+                	                CharSequence text = "Thanks for posting to Facebook!";
+                	                int duration = Toast.LENGTH_LONG;
+
+                	                Toast toast = Toast.makeText(context, text, duration);
+                	                toast.show();
                 	            }
                 	            catch (Exception e) {
                 	                // TODO: handle exception
@@ -175,26 +199,88 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
+        
         /**********************************************************************
          * 								FOURSQUARE
          *********************************************************************/
         /* If the user clicks on the foursquare button */
         else if (v == foursquare_button) {
-            Intent intent = new Intent();
-            intent.setData(Uri.parse("http://m.foursquare.com/user"));
-            startActivity(intent);	
+
+        	/* Create a new foursquare app to deal with permissions and access
+        	 * tokens */
+        	foursquareClient = new FoursquareApp(this, FOURSQUARE_CLIENT_ID, 
+        											FOURSQUARE_CLIENT_SECRET);
+        	
+        	/* If the user hasn't granted us permissions to access their foursquare
+        	 * account, show a dialog requesting permissions
+        	 */
+        	if (!foursquareClient.hasAccessToken())
+        		foursquareClient.authorize();
+        	
+        	/* Create a foursquare API to deal with retrieving and posting info */
+			this.foursquareApi = new FoursquareApi(FOURSQUARE_CLIENT_ID, 
+												FOURSQUARE_CLIENT_SECRET, 
+												FOURSQUARE_REDIRECT_URL,
+												foursquareClient.mAccessToken, 
+												new DefaultIOHandler());
+
+			/* Check the user in a Foursquare venue given its ID */
+			new FoursquareCheckinTask(this.foursquareApi, "4de0117c45dd3eae8764d6ac").execute();
         }
     }
+    
     
 	@Override
 	public void onComplete(Bundle values) {
 		// TODO Auto-generated method stub
-
 	}
-	
+
 	@Override
 	public void onFacebookError(FacebookError e) {
 		// TODO Auto-generated method stub
-		
 	}
+	
+	
+    private class FoursquareCheckinTask extends AsyncTask<Uri, Void, Void> {
+
+		private String apiStatusMsg;
+		private FoursquareApi foursquareApi;
+		private String venueId;
+		
+		public FoursquareCheckinTask(FoursquareApi foursquareApi, String venueId) {
+			super();
+			this.foursquareApi = foursquareApi;
+			this.venueId = venueId;
+		}
+		
+		@Override
+		protected Void doInBackground(Uri...params) {
+			try {
+				Result<Checkin> result = this.foursquareApi.checkinsAdd(this.venueId, 
+												null,"",null,null,null,null,null);
+
+				if (result.getMeta().getCode()==200) {
+					apiStatusMsg = "Thanks for checking in via Enefsy!";
+				} else {
+					apiStatusMsg = result.getMeta().getErrorDetail();
+				}
+			} catch (FoursquareApiException e) {
+				e.printStackTrace();
+			}
+            return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			Toast.makeText(Main.this, apiStatusMsg, Toast.LENGTH_LONG).show();
+		}
+	}
+	
 }
+
+
+
+
+
+
+
