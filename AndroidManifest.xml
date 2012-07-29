@@ -28,7 +28,7 @@
             <!-- Handle a NDEF record -->
             <intent-filter>
       			<action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-      			<data android:mimeType="application/com.enefsy.main"/>
+      			<data android:mimeType="application/vnd.enefsy.main"/>
       			<category android:name="android.intent.category.DEFAULT"/>
     		</intent-filter>
         </activity>

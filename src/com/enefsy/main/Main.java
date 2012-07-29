@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -24,6 +25,8 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
+import com.enefsy.main.MimeType;
+import com.enefsy.main.R;
 
 @TargetApi(14)
 public class Main extends Activity implements DialogListener, OnClickListener {
@@ -34,7 +37,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton foursquare_button;
 	
 	/* TextView object to hold display Unique ID from NFC tag */
-	private TextView textView;
+	private TextView mUIDView;
 	
 	/* TagActivity object to pull Unique ID off of NFC tag */
     //private TagActivity tagActivity;
@@ -53,6 +56,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        mUIDView = (TextView)findViewById(R.id.uid_view);
 
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
         facebook_button.setOnClickListener(this);
@@ -69,15 +74,19 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             return;
         }
         
-/*        Intent intent = getIntent();
+        // see if app was started from a tag and show game console
+        Intent intent = getIntent();
+        if(intent.getType() != null && intent.getType().equals(MimeType.NFC_DEMO)) {
+        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage msg = (NdefMessage) rawMsgs[0];
+            NdefRecord uidRecord = msg.getRecords()[0];
+            String uid = new String(uidRecord.getPayload());
+            mUIDView.setText(uid);
+            //mUIDView.setText(intent.getType());
+        }
         
-        textView = (TextView) findViewById(R.id.uid_view);
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
-                NfcAdapter.EXTRA_NDEF_MESSAGES);
-        // only one message sent during the beam
-        NdefMessage msg = (NdefMessage) rawMsgs[0];
-        // record 0 contains the MIME type, record 1 is the AAR, if present
-        textView.setText(new String(msg.getRecords()[0].getPayload())); */
+        //intent.setType(MimeType.NFC_DEMO);
+        //mUIDView.setText(intent.getType());
     }
     
     @Override
@@ -234,31 +243,31 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 		
 	}
 	
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Check to see that the Activity started due to an Android Beam
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-            processIntent(getIntent());
-        }
-    }
-    
-    @Override
-    public void onNewIntent(Intent intent) {
-        // onResume gets called after this to handle the intent
-        setIntent(intent);
-    }
-
-    /**
-     * Parses the NDEF Message from the intent and prints to the TextView
-     */
-    void processIntent(Intent intent) {
-        textView = (TextView) findViewById(R.id.uid_view);
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
-                NfcAdapter.EXTRA_NDEF_MESSAGES);
-        // only one message sent during the beam
-        NdefMessage msg = (NdefMessage) rawMsgs[0];
-        // record 0 contains the MIME type, record 1 is the AAR, if present
-        textView.setText(new String(msg.getRecords()[0].getPayload()));
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        // Check to see that the Activity started due to an Android Beam
+//        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+//            processIntent(getIntent());
+//        }
+//    }
+//    
+//    @Override
+//    public void onNewIntent(Intent intent) {
+//        // onResume gets called after this to handle the intent
+//        setIntent(intent);
+//    }
+//
+//    /**
+//     * Parses the NDEF Message from the intent and prints to the TextView
+//     */
+//    void processIntent(Intent intent) {
+//        textView = (TextView) findViewById(R.id.uid_view);
+//        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+//                NfcAdapter.EXTRA_NDEF_MESSAGES);
+//        // only one message sent during the beam
+//        NdefMessage msg = (NdefMessage) rawMsgs[0];
+//        // record 0 contains the MIME type, record 1 is the AAR, if present
+//        textView.setText(new String(msg.getRecords()[0].getPayload()));
+//    }
 }
