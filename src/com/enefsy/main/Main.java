@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-//import android.widget.TextView;
 import android.widget.Toast;
 
 /* Facebook package */
@@ -36,9 +35,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
 	
-	/* TextView object to hold display Unique ID from NFC tag */
-	//private TextView mUIDView;
-	
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
 	private AsyncFacebookRunner asyncFacebookClient;
@@ -46,6 +42,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     /* NFC Adapter to pull UID message from tag */
 	private NfcAdapter mNfcAdapter;
 	
+	/* String to hold the Unique ID of the venue */
 	private String uid;
 	
     @Override
@@ -77,12 +74,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             NdefMessage msg = (NdefMessage) rawMsgs[0];
             NdefRecord uidRecord = msg.getRecords()[0];
             uid = new String(uidRecord.getPayload());
-            //mUIDView.setText(uid);
-            //mUIDView.setText(intent.getType());
         }
-        
-        //intent.setType(MimeType.NFC_DEMO);
-        //mUIDView.setText(intent.getType());
     }
     
     @Override
