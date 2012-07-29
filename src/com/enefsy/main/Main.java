@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.TextView;
+//import android.widget.TextView;
 import android.widget.Toast;
 
 /* Facebook package */
@@ -37,13 +37,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton foursquare_button;
 	
 	/* TextView object to hold display Unique ID from NFC tag */
-	private TextView mUIDView;
-	
-	/* TagActivity object to pull Unique ID off of NFC tag */
-    //private TagActivity tagActivity;
-	
-	/* Unique ID for Enefsy database */
-	//private String uid;
+	//private TextView mUIDView;
 	
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
@@ -52,12 +46,14 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     /* NFC Adapter to pull UID message from tag */
 	private NfcAdapter mNfcAdapter;
 	
+	private String uid;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        mUIDView = (TextView)findViewById(R.id.uid_view);
+        //mUIDView = (TextView)findViewById(R.id.uid_view);
 
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
         facebook_button.setOnClickListener(this);
@@ -74,14 +70,14 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             return;
         }
         
-        // see if app was started from a tag and show game console
+        // see if app was started from an NFC tag
         Intent intent = getIntent();
         if(intent.getType() != null && intent.getType().equals(MimeType.NFC_DEMO)) {
         	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage msg = (NdefMessage) rawMsgs[0];
             NdefRecord uidRecord = msg.getRecords()[0];
-            String uid = new String(uidRecord.getPayload());
-            mUIDView.setText(uid);
+            uid = new String(uidRecord.getPayload());
+            //mUIDView.setText(uid);
             //mUIDView.setText(intent.getType());
         }
         
@@ -160,8 +156,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Just got home from a hard night at work");
-                	                parameters.putString("place", "178106272217011");
+                	                parameters.putString("message", "Just checked into Antarctica?");
+                	                parameters.putString("place", uid);
                 	                parameters.putString("description", "test test test");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", new PostRequestListener(), state);
                 	            }
