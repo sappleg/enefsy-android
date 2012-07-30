@@ -4,12 +4,14 @@ package com.enefsy.main;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Menu;
@@ -19,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 /* Facebook package */
+import com.enefsy.foursquare.FoursquareApp;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -26,6 +29,11 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.enefsy.main.MimeType;
 import com.enefsy.main.R;
+import fi.foyt.foursquare.api.FoursquareApi;
+import fi.foyt.foursquare.api.FoursquareApiException;
+import fi.foyt.foursquare.api.Result;
+import fi.foyt.foursquare.api.entities.Checkin;
+import fi.foyt.foursquare.api.io.DefaultIOHandler;
 
 @TargetApi(14)
 public class Main extends Activity implements DialogListener, OnClickListener {
@@ -34,7 +42,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton facebook_button;
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
-	
+
 	/* Creates a Facebook Object with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
 	private AsyncFacebookRunner asyncFacebookClient;
@@ -45,6 +53,13 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	/* String to hold the Unique ID of the venue */
 	private String uid;
 	
+	private FoursquareApi foursquareApi;
+
+	private FoursquareApp foursquareClient;
+	private static final String FOURSQUARE_CLIENT_ID = "4NOPZVJ4ILTBQLU1AYO2BX2QMUBCJCLL3RFF0UETEZOQW02W";
+	private static final String FOURSQUARE_CLIENT_SECRET = "UAE5UZZ0KMDPTWOSYHU1R1UA3JX4NJDHO1HY5HWL3TJHVPQ1";
+	private static final String FOURSQUARE_REDIRECT_URL = "http://www.enefsy.com";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +124,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         	asyncFacebookClient = new AsyncFacebookRunner(facebookClient);
 
        		/* Attributes to check if user has granted permissions for facebook */
-//       		String FILENAME = "AndroidSSO_data";
        	    final SharedPreferences mPrefs;
        	    
             try {
@@ -151,7 +165,15 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	                parameters.putString("message", "Just checked into Antarctica?");
                 	                parameters.putString("place", uid);
                 	                parameters.putString("description", "test test test");
-                	                asyncFacebookClient.request("me/feed", parameters, "POST", new PostRequestListener(), state);
+                	                asyncFacebookClient.request("me/feed", parameters, "POST", 
+                	                		new PostRequestListener(), state);
+                	                
+                	                Context context = getApplicationContext();
+                	                CharSequence text = "Thanks for posting to Facebook!";
+                	                int duration = Toast.LENGTH_LONG;
+
+                	                Toast toast = Toast.makeText(context, text, duration);
+                	                toast.show();
                 	            }
                 	            catch (Exception e) {
                 	                // TODO: handle exception
@@ -208,54 +230,80 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
+        
         /**********************************************************************
          * 								FOURSQUARE
          *********************************************************************/
         /* If the user clicks on the foursquare button */
         else if (v == foursquare_button) {
-            Intent intent = new Intent();
-            intent.setData(Uri.parse("http://m.foursquare.com/user"));
-            startActivity(intent);	
+
+        	/* Create a new foursquare app to deal with permissions and access
+        	 * tokens */
+        	foursquareClient = new FoursquareApp(this, FOURSQUARE_CLIENT_ID, 
+        											FOURSQUARE_CLIENT_SECRET);
+        	
+        	/* If the user hasn't granted us permissions to access their foursquare
+        	 * account, show a dialog requesting permissions
+        	 */
+        	if (!foursquareClient.hasAccessToken())
+        		foursquareClient.authorize();
+        	
+        	/* Create a foursquare API to deal with retrieving and posting info */
+			this.foursquareApi = new FoursquareApi(FOURSQUARE_CLIENT_ID, 
+												FOURSQUARE_CLIENT_SECRET, 
+												FOURSQUARE_REDIRECT_URL,
+												foursquareClient.mAccessToken, 
+												new DefaultIOHandler());
+
+			/* Check the user in a Foursquare venue given its ID */
+			new FoursquareCheckinTask(this.foursquareApi, "4de0117c45dd3eae8764d6ac").execute();
         }
     }
+    
     
 	@Override
 	public void onComplete(Bundle values) {
 		// TODO Auto-generated method stub
-
 	}
-	
+
 	@Override
 	public void onFacebookError(FacebookError e) {
 		// TODO Auto-generated method stub
-		
 	}
 	
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        // Check to see that the Activity started due to an Android Beam
-//        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-//            processIntent(getIntent());
-//        }
-//    }
-//    
-//    @Override
-//    public void onNewIntent(Intent intent) {
-//        // onResume gets called after this to handle the intent
-//        setIntent(intent);
-//    }
-//
-//    /**
-//     * Parses the NDEF Message from the intent and prints to the TextView
-//     */
-//    void processIntent(Intent intent) {
-//        textView = (TextView) findViewById(R.id.uid_view);
-//        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
-//                NfcAdapter.EXTRA_NDEF_MESSAGES);
-//        // only one message sent during the beam
-//        NdefMessage msg = (NdefMessage) rawMsgs[0];
-//        // record 0 contains the MIME type, record 1 is the AAR, if present
-//        textView.setText(new String(msg.getRecords()[0].getPayload()));
-//    }
+	
+    private class FoursquareCheckinTask extends AsyncTask<Uri, Void, Void> {
+
+		private String apiStatusMsg;
+		private FoursquareApi foursquareApi;
+		private String venueId;
+		
+		public FoursquareCheckinTask(FoursquareApi foursquareApi, String venueId) {
+			super();
+			this.foursquareApi = foursquareApi;
+			this.venueId = venueId;
+		}
+		
+		@Override
+		protected Void doInBackground(Uri...params) {
+			try {
+				Result<Checkin> result = this.foursquareApi.checkinsAdd(this.venueId, 
+												null,"",null,null,null,null,null);
+
+				if (result.getMeta().getCode()==200) {
+					apiStatusMsg = "Thanks for checking in via Enefsy!";
+				} else {
+					apiStatusMsg = result.getMeta().getErrorDetail();
+				}
+			} catch (FoursquareApiException e) {
+				e.printStackTrace();
+			}
+            return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			Toast.makeText(Main.this, apiStatusMsg, Toast.LENGTH_LONG).show();
+		}
+	}
 }
