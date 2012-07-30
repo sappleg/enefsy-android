@@ -73,7 +73,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private NfcAdapter mNfcAdapter;
 	
 	/* String to hold the Unique ID of the venue */
-	private String uid = "";
+	private String uid = "1";
 	
 	/* Return String containing venue specific db data */
 	private String result = "";
@@ -353,7 +353,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     	
     	//the uid data to send
     	final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    	nameValuePairs.add(new BasicNameValuePair("uid",uid));
+    	nameValuePairs.add(new BasicNameValuePair("uid","1"));
     	
 		new Thread() {
 			@Override
@@ -363,13 +363,13 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 				//http post
 				try{
 					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost httppost = new HttpPost("http://enefsy.getVenues.php");
+					HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
 					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 					HttpResponse response = httpclient.execute(httppost);
 					HttpEntity entity = response.getEntity();
 					is = entity.getContent();
 				}catch(Exception e){
-					Log.e("log_tag", "Error in http connection "+e.toString());
+					Log.e("log_tag", "Error in http connection " + e.toString());
 				}
 				
 				//convert response to string
