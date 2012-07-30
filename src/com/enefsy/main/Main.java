@@ -1,7 +1,6 @@
 package com.enefsy.main;
 
 /* Android package */
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -29,6 +28,8 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.enefsy.main.MimeType;
 import com.enefsy.main.R;
+
+/* Foursquare package */
 import fi.foyt.foursquare.api.FoursquareApi;
 import fi.foyt.foursquare.api.FoursquareApiException;
 import fi.foyt.foursquare.api.Result;
@@ -54,7 +55,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private String uid;
 	
 	private FoursquareApi foursquareApi;
-
 	private FoursquareApp foursquareClient;
 	private static final String FOURSQUARE_CLIENT_ID = "4NOPZVJ4ILTBQLU1AYO2BX2QMUBCJCLL3RFF0UETEZOQW02W";
 	private static final String FOURSQUARE_CLIENT_SECRET = "UAE5UZZ0KMDPTWOSYHU1R1UA3JX4NJDHO1HY5HWL3TJHVPQ1";
@@ -256,7 +256,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 												new DefaultIOHandler());
 
 			/* Check the user in a Foursquare venue given its ID */
-			new FoursquareCheckinTask(this.foursquareApi, "4de0117c45dd3eae8764d6ac").execute();
+			new FoursquareCheckinTask(this.foursquareApi, uid).execute();
         }
     }
     

@@ -1,14 +1,12 @@
 package com.enefsy.foursquare;
 
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
-//import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -35,8 +33,8 @@ import android.widget.TextView;
 public class FoursquareDialog extends Dialog {
 	static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
     static final float[] DIMENSIONS_PORTRAIT = {280, 420};
-    static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                         						ViewGroup.LayoutParams.MATCH_PARENT);
+    static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                         						ViewGroup.LayoutParams.FILL_PARENT);
     static final int MARGIN = 4;
     static final int PADDING = 2;
 
@@ -56,7 +54,6 @@ public class FoursquareDialog extends Dialog {
 		mListener	= listener;
 	}
 	
-	@TargetApi(13)
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,11 +70,9 @@ public class FoursquareDialog extends Dialog {
         setUpTitle();
         setUpWebView();
         
-        Point size = new Point();
         Display display 	= getWindow().getWindowManager().getDefaultDisplay();
-        display.getSize(size);
         final float scale 	= getContext().getResources().getDisplayMetrics().density;
-        float[] dimensions 	= (size.x < size.y) ? DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
+        float[] dimensions 	= (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
         
         addContentView(mContent, new FrameLayout.LayoutParams((int) (dimensions[0] * scale + 0.5f),
         							(int) (dimensions[1] * scale + 0.5f)));
@@ -110,7 +105,7 @@ public class FoursquareDialog extends Dialog {
 	        mWebView.setVerticalScrollBarEnabled(false);
 	        mWebView.setHorizontalScrollBarEnabled(false);
 	        mWebView.setWebViewClient(new TwitterWebViewClient());
-//	        mWebView.getSettings().setJavaScriptEnabled(true);
+	        mWebView.getSettings().setJavaScriptEnabled(true);
 	        mWebView.loadUrl(mUrl);
 	        mWebView.setLayoutParams(FILL);
 	        
