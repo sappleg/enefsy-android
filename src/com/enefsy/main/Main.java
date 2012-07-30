@@ -1,5 +1,24 @@
 package com.enefsy.main;
 
+/* Java io package */
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+/* Apache DB package */
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -13,10 +32,12 @@ import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /* Facebook package */
@@ -52,20 +73,29 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private NfcAdapter mNfcAdapter;
 	
 	/* String to hold the Unique ID of the venue */
-	private String uid;
+	private String uid = "";
 	
+	/* Return String containing venue specific db data */
+	private String result = "";
+	
+	/* Foursquare Objects/Variables */
 	private FoursquareApi foursquareApi;
 	private FoursquareApp foursquareClient;
 	private static final String FOURSQUARE_CLIENT_ID = "4NOPZVJ4ILTBQLU1AYO2BX2QMUBCJCLL3RFF0UETEZOQW02W";
 	private static final String FOURSQUARE_CLIENT_SECRET = "UAE5UZZ0KMDPTWOSYHU1R1UA3JX4NJDHO1HY5HWL3TJHVPQ1";
 	private static final String FOURSQUARE_REDIRECT_URL = "http://www.enefsy.com";
+	
+	/* Diagnostic TextView */
+	private TextView mTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
-        //mUIDView = (TextView)findViewById(R.id.uid_view);
+        String venueData = "";
+
+        // Diagnostic textview
+        mTextView = (TextView)findViewById(R.id.uid_view);
 
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
         facebook_button.setOnClickListener(this);
@@ -82,13 +112,25 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             return;
         }
         
-        // see if app was started from an NFC tag
+        // See if app was started from an NFC tag
         Intent intent = getIntent();
         if(intent.getType() != null && intent.getType().equals(MimeType.NFC_DEMO)) {
         	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage msg = (NdefMessage) rawMsgs[0];
             NdefRecord uidRecord = msg.getRecords()[0];
             uid = new String(uidRecord.getPayload());
+        }
+        
+        // pull data from enefsy db
+        if(uid != "") {
+        	getVenueData();
+        	venueData = result;
+        }
+        
+        if(venueData != ""){
+        	mTextView.setText("Success!");
+        } else {
+        	mTextView.setText("Failure, suck it");
         }
     }
     
@@ -306,4 +348,67 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 			Toast.makeText(Main.this, apiStatusMsg, Toast.LENGTH_LONG).show();
 		}
 	}
+    
+    private void getVenueData() {
+    	
+    	//the uid data to send
+    	final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+    	nameValuePairs.add(new BasicNameValuePair("uid",uid));
+    	
+		new Thread() {
+			@Override
+			public void run() {
+		    	InputStream is = null;
+		    	
+				//http post
+				try{
+					HttpClient httpclient = new DefaultHttpClient();
+					HttpPost httppost = new HttpPost("http://enefsy.getVenues.php");
+					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+					HttpResponse response = httpclient.execute(httppost);
+					HttpEntity entity = response.getEntity();
+					is = entity.getContent();
+				}catch(Exception e){
+					Log.e("log_tag", "Error in http connection "+e.toString());
+				}
+				
+				//convert response to string
+				try{
+					BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
+					StringBuilder sb = new StringBuilder();
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+    	                sb.append(line + "\n");
+					}
+					is.close();
+    	 
+					setResult(sb.toString());
+				}catch(Exception e){
+					Log.e("log_tag", "Error converting result " + e.toString());
+				}
+    	 
+				//parse JSON data
+				try{
+					JSONArray jArray = new JSONArray(result);
+					for(int i=0;i<jArray.length();i++){
+    	                JSONObject json_data = jArray.getJSONObject(i);
+    	                Log.i("log_tag","id: "+json_data.getInt("id")+
+    	                        ", name: "+json_data.getString("name")+
+    	                        ", address: "+json_data.getString("address")+
+    	                        ", latitude: "+json_data.getDouble("latitude")+
+    	                        ", longitude: "+json_data.getDouble("longitude")+
+    	                        ", facebookid: "+json_data.getString("facebookid")+
+    	                        ", foursquareid: "+json_data.getString("foursquareid")
+    	                );
+					}
+				} catch(JSONException e){
+					Log.e("log_tag", "Error parsing data " + e.toString());
+				}
+			}
+		}.start();
+    }
+    
+    private void setResult(String s) {
+    	result = s;
+    }
 }
