@@ -73,10 +73,18 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private NfcAdapter mNfcAdapter;
 	
 	/* String to hold the Unique ID of the venue */
-	private String uid = "1";
+	private String uid = "";
 	
 	/* Return String containing venue specific db data */
-	private String result = "";
+	private String name = "";
+	private String address = "";
+	private double latitude = 0.0;
+	private double longitude = 0.0;
+	private String facebookid = "";
+	private String twitterhandle = "";
+	private String foursquareid = "";
+	private String googleid = "";
+	private String yelpid = "";
 	
 	/* Foursquare Objects/Variables */
 	private FoursquareApi foursquareApi;
@@ -92,11 +100,11 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        String venueData = "";
 
-        // Diagnostic textview
+        /* Diagnostic textview */
         mTextView = (TextView)findViewById(R.id.uid_view);
 
+        /* Social Platform buttons */
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
         facebook_button.setOnClickListener(this);
         twitter_button = (ImageButton) findViewById(R.id.twitter_button);
@@ -104,7 +112,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
         
-        // Check for available NFC Adapter
+        
+        /* Check for available NFC Adapter */
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
             Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
@@ -112,7 +121,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             return;
         }
         
-        // See if app was started from an NFC tag
+        /* See if application was started from an NFC tag */
         Intent intent = getIntent();
         if(intent.getType() != null && intent.getType().equals(MimeType.NFC_DEMO)) {
         	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
@@ -121,16 +130,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             uid = new String(uidRecord.getPayload());
         }
         
-        // pull data from enefsy db
+        /* pull data from enefsy database */
         if(uid != "") {
-        	getVenueData();
-        	venueData = result;
-        }
-        
-        if(venueData != ""){
-        	mTextView.setText("Success!");
-        } else {
-        	mTextView.setText("Failure, suck it");
+			new GetVenueData().execute();
         }
     }
     
@@ -204,8 +206,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Just checked into Antarctica?");
-                	                parameters.putString("place", uid);
+                	                parameters.putString("message", "Heading to bed");
+                	                parameters.putString("place", facebookid);
                 	                parameters.putString("description", "test test test");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", 
                 	                		new PostRequestListener(), state);
@@ -348,67 +350,90 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 			Toast.makeText(Main.this, apiStatusMsg, Toast.LENGTH_LONG).show();
 		}
 	}
-    
-    private void getVenueData() {
-    	
-    	//the uid data to send
-    	final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    	nameValuePairs.add(new BasicNameValuePair("uid","1"));
-    	
-		new Thread() {
-			@Override
-			public void run() {
-		    	InputStream is = null;
+
+    private class GetVenueData extends AsyncTask<String, Void, String> {
+
+    	@Override
+		protected String doInBackground(String... uids) {
+    		
+    		//the uid data to send
+    		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+    		nameValuePairs.add(new BasicNameValuePair("id",uid));
+    		String venueData = "";
+    		InputStream is = null;
 		    	
-				//http post
-				try{
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
-					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-					HttpResponse response = httpclient.execute(httppost);
-					HttpEntity entity = response.getEntity();
-					is = entity.getContent();
-				}catch(Exception e){
-					Log.e("log_tag", "Error in http connection " + e.toString());
-				}
-				
-				//convert response to string
-				try{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
-					StringBuilder sb = new StringBuilder();
-					String line = null;
-					while ((line = reader.readLine()) != null) {
-    	                sb.append(line + "\n");
-					}
-					is.close();
-    	 
-					setResult(sb.toString());
-				}catch(Exception e){
-					Log.e("log_tag", "Error converting result " + e.toString());
-				}
-    	 
-				//parse JSON data
-				try{
-					JSONArray jArray = new JSONArray(result);
-					for(int i=0;i<jArray.length();i++){
-    	                JSONObject json_data = jArray.getJSONObject(i);
-    	                Log.i("log_tag","id: "+json_data.getInt("id")+
-    	                        ", name: "+json_data.getString("name")+
-    	                        ", address: "+json_data.getString("address")+
-    	                        ", latitude: "+json_data.getDouble("latitude")+
-    	                        ", longitude: "+json_data.getDouble("longitude")+
-    	                        ", facebookid: "+json_data.getString("facebookid")+
-    	                        ", foursquareid: "+json_data.getString("foursquareid")
-    	                );
-					}
-				} catch(JSONException e){
-					Log.e("log_tag", "Error parsing data " + e.toString());
-				}
+			//http post
+			try{
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				HttpResponse response = httpclient.execute(httppost);
+				HttpEntity entity = response.getEntity();
+				is = entity.getContent();
+			}catch(Exception e){
+				Log.e("log_tag", "Error in http connection " + e.toString());
 			}
-		}.start();
-    }
-    
-    private void setResult(String s) {
-    	result = s;
+			
+			//convert response to string
+			try{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+    	               sb.append(line + "\n");
+				}
+				is.close();
+    	 
+				venueData = sb.toString();
+			}catch(Exception e){
+				Log.e("log_tag", "Error converting result " + e.toString());
+			}
+    	 
+			//parse JSON data
+			try{
+				JSONArray jArray = new JSONArray(venueData);
+//				for(int i=0;i<jArray.length();i++){
+//   	                JSONObject json_data = jArray.getJSONObject(i);
+//   	                Log.i("log_tag","id: "+json_data.getInt("id")+
+//   	                        ", name: "+json_data.getString("name")+
+//   	                        ", address: "+json_data.getString("address")+
+//   	                        ", latitude: "+json_data.getDouble("latitude")+
+//   	                        ", longitude: "+json_data.getDouble("longitude")+
+//   	                        ", facebookid: "+json_data.getString("facebookid")+
+//   	                        ", twitterhandle: "+json_data.getString("twitterhandle")+
+//  	                        ", foursquareid: "+json_data.getString("foursquareid")+
+//   	                        ", googleid: "+json_data.getString("googleid")+
+//   	                        ", yelpid: "+json_data.getString("yelpid")
+//   	                );
+//				}
+				setVenueData(jArray);
+			} catch(JSONException e){
+				Log.e("log_tag", "Error parsing data " + e.toString());
+			}
+
+		return venueData;
+		}
+    	
+        @Override
+        protected void onPostExecute(String s) {
+            mTextView.setText("Database Query Successful");
+        }
+        
+        protected void setVenueData(JSONArray jArray) {
+        	try {
+				JSONObject json_data = jArray.getJSONObject(0);
+				name = json_data.getString("name");
+				address = json_data.getString("address");
+				latitude = json_data.getDouble("latitude");
+				longitude = json_data.getDouble("longitude");
+				facebookid = json_data.getString("facebookid");
+				twitterhandle = json_data.getString("twitterhandle");
+				foursquareid = json_data.getString("foursquareid");
+				googleid = json_data.getString("googleid");
+				yelpid = json_data.getString("yelpid");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+        }
     }
 }
