@@ -6,8 +6,6 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.content.Context;
@@ -118,7 +116,7 @@ public class FoursquareDialog extends Dialog {
 	        public boolean shouldOverrideUrlLoading(WebView view, String url) {
 	        	Log.d(TAG, "Redirecting URL " + url);
 	        	
-	        	if (url.startsWith(FoursquareApp.CALLBACK_URL)) {
+	        	if (url.startsWith(FoursquareActivity.CALLBACK_URL)) {
 	        		String urls[] = url.split("=");
 	        		
 	        		mListener.onComplete(urls[1]);
