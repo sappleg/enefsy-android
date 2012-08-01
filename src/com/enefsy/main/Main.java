@@ -77,9 +77,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private String address = "";
 	private double latitude = 0.0;
 	private double longitude = 0.0;
-	private String facebookid = "";
+	private String facebookid = "178106272217011";
 	private String twitterhandle = "";
-	private String foursquareid = "";
+	private String foursquareid = "4ae5c6a0f964a520f4a121e3";
 	private String googleid = "";
 	private String yelpid = "";
 	
@@ -199,7 +199,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "Heading to bed");
+                	                parameters.putString("message", "");
                 	                parameters.putString("place", facebookid);
                 	                parameters.putString("description", "test test test");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", 
