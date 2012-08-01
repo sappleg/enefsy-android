@@ -6,6 +6,5 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/facebook"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.mnm.asynctaskmanager.MainActivity"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
