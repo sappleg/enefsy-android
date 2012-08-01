@@ -43,6 +43,7 @@ public class FoursquareActivity extends Activity {
 	private ProgressDialog mProgress;
 	private String mTokenUrl;
 	private String mAccessToken;
+	private String mCode;
 	
 	/**
 	 * Callback url, as set in 'Manage OAuth Costumers' page (https://developer.foursquare.com/)
@@ -73,7 +74,8 @@ public class FoursquareActivity extends Activity {
 		FsqDialogListener listener = new FsqDialogListener() {
 			@Override
 			public void onComplete(String code) {
-				getAccessToken(code);					
+				mCode = code;
+				getAccessToken();					
 			}
 			
 			@Override
@@ -90,13 +92,13 @@ public class FoursquareActivity extends Activity {
 	}
 	
 	
-	private void getAccessToken(final String code) {
-			new FoursquareGetAccessTokenTask().execute(code);
+	private void getAccessToken() {
+		new FoursquareGetAccessTokenTask().execute();
 	}
 	
 	
 	private void saveAccessToken() {
-			new FoursquareSaveAccessTokenTask().execute();	
+		new FoursquareSaveAccessTokenTask().execute();	
 	}
 	
 	
@@ -194,8 +196,6 @@ public class FoursquareActivity extends Activity {
 	
 	private class FoursquareGetAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 		
-		String code;
-
 		protected void onPreExecute() {
 			mProgress.setMessage("Getting access token ...");
 			mProgress.show();		
@@ -218,7 +218,7 @@ public class FoursquareActivity extends Activity {
 				int what = 0;
 				
 				try {
-					URL url = new URL(mTokenUrl + "&code=" + this.code);
+					URL url = new URL(mTokenUrl + "&code=" + mCode);
 					
 					Log.i(TAG, "Opening URL " + url.toString());
 					
@@ -246,12 +246,7 @@ public class FoursquareActivity extends Activity {
            }
             
             return null;
-		}
-		
-		protected void execute(String code){
-			this.code = code;
-			doInBackground();
-		}
+		}		
 	}
 	
 	

@@ -107,12 +107,12 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         
         
         /* Check for available NFC Adapter */
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null) {
-            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
+//        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+//        if (mNfcAdapter == null) {
+//            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
+//            finish();
+//            return;
+//        }
         
         /* See if application was started from an NFC tag */
         Intent intent = getIntent();
