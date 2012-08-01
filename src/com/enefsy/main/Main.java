@@ -297,7 +297,11 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		/* If the phone is connected to the internet, try to authorize the user */
         		if (isNetworkConnected()) {
 	        		foursquareActivity.initializeApi();
-	        		foursquareActivity.checkIn("4de0117c45dd3eae8764d6ac");        		
+	        		try {
+	        			foursquareActivity.checkIn(foursquareid); 
+	        		} catch(Exception e) {
+	        			e.printStackTrace();
+	        		}
         		}
 
         		/* If no internet connection is available, alert user */
