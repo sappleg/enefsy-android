@@ -209,9 +209,6 @@ public class FoursquareActivity extends Activity {
 		protected Void doInBackground(Uri... params) {
 
             try {
-
-            	mProgress.setMessage("Getting access token ...");
-        		mProgress.show();
         				
 				Log.i(TAG, "Getting access token");
 				

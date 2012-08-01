@@ -22,6 +22,7 @@ import org.json.JSONObject;
 /* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -70,16 +71,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private NfcAdapter mNfcAdapter;
 	
 	/* String to hold the Unique ID of the venue */
-	private String uid = "";
+	private String uid = "11111111111111111111";
 	
 	/* Return String containing venue specific db data */
 	private String name = "";
 	private String address = "";
 	private double latitude = 0.0;
 	private double longitude = 0.0;
-	private String facebookid = "178106272217011";
+	private String facebookid = "";
 	private String twitterhandle = "";
-	private String foursquareid = "4ae5c6a0f964a520f4a121e3";
+	private String foursquareid = "";
 	private String googleid = "";
 	private String yelpid = "";
 	
@@ -88,6 +89,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
+	
+	/* Progress Dialog for Database Query */
+	private ProgressDialog mProgress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,14 +109,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
         
+        /* Construct Progress Dialog for Database Query */
+        mProgress = new ProgressDialog(getApplicationContext());
         
         /* Check for available NFC Adapter */
-//        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-//        if (mNfcAdapter == null) {
-//            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
-//            finish();
-//            return;
-//        }
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         
         /* See if application was started from an NFC tag */
         Intent intent = getIntent();
@@ -339,10 +345,15 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	}
 
 
-    private class GetVenueData extends AsyncTask<String, Void, String> {
+    private class GetVenueData extends AsyncTask<Uri, Void, Void> {
+    	
+		protected void onPreExecute() {
+			mProgress.setMessage("Connecting to Enefsy...");
+			//mProgress.show();		
+		}
 
     	@Override
-		protected String doInBackground(String... uids) {
+		protected Void doInBackground(Uri... params) {
     		
     		//the uid data to send
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -384,13 +395,12 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 			} catch(JSONException e){
 				Log.e("log_tag", "Error parsing data " + e.toString());
 			}
-
-		return venueData;
+			return null;
 		}
     	
-        @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(Void result) {
             mTextView.setText("Database Query Successful");
+            mProgress.dismiss();
         }
         
         protected void setVenueData(JSONArray jArray) {
