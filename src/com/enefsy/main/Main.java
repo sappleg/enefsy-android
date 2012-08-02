@@ -73,16 +73,17 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	/* String to hold the Unique ID of the venue */
 	private String uid = "11111111111111111111";
 	
-	/* Return String containing venue specific db data */
-	private String name = "";
-	private String address = "";
-	private double latitude = 0.0;
-	private double longitude = 0.0;
-	private String facebookid = "";
-	private String twitterhandle = "";
-	private String foursquareid = "";
-	private String googleid = "";
-	private String yelpid = "";
+	/* Return String containing venue specific database data.
+	   The default values are stored for Dublin, CA Starbucks */
+	private String name = "Starbucks";
+	private String address = "4930 Dublin Boulevard, Dublin, CA 94568";
+	private double latitude = 37.704025;
+	private double longitude = -121.884941;
+	private String facebookid = "233762670072788";
+	private String twitterhandle = "@Starbucks";
+	private String foursquareid = "4ac0508af964a5202e9420e3";
+	private String googleid = "100031254040654670562";
+	private String yelpid = "starbucks-coffee-dublin-2";
 	
 	/* Diagnostic TextView */
 	private TextView mTextView;
