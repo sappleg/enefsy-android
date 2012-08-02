@@ -46,9 +46,7 @@ public class DatabaseActivity extends Activity {
         venueDataMap.put("foursquareid", "4ac0508af964a5202e9420e3");
         venueDataMap.put("googleid", "100031254040654670562");
         venueDataMap.put("yelpid", "starbucks-coffee-dublin-2");
-	}
-	
-	public void getVenueData() {
+
 		new GetVenueDataTask().execute();
 	}
 	
@@ -129,4 +127,7 @@ public class DatabaseActivity extends Activity {
 		}
 	}
 	
+	public String getVenueDataMapValue(String key) {
+		return venueDataMap.get(key);
+	}
 }

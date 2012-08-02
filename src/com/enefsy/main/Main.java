@@ -1,11 +1,7 @@
 package com.enefsy.main;
 
-/* Android package */
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,15 +11,12 @@ import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /* Facebook dependencies */
@@ -50,19 +43,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	
     /* NFC Adapter to pull UID message from tag */
 	private NfcAdapter mNfcAdapter;
-	
-	/* Hashmap to contain all venue specific data.
-	   The default values are stored for Dublin, CA Starbucks */
-	private Map<String, String> venueDataMap;
-//	private String name = "Starbucks";
-//	private String address = "4930 Dublin Boulevard, Dublin, CA 94568";
-//	private double latitude = 37.704025;
-//	private double longitude = -121.884941;
-//	private String facebookid = "233762670072788";
-//	private String twitterhandle = "@Starbucks";
-//	private String foursquareid = "4ac0508af964a5202e9420e3";
-//	private String googleid = "100031254040654670562";
-//	private String yelpid = "starbucks-coffee-dublin-2";
 
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
@@ -74,18 +54,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
-        /* Pre-populate Map containing venue specific data */
-        venueDataMap.put("id", "");
-        venueDataMap.put("name", "");
-        venueDataMap.put("address", "");
-        venueDataMap.put("latitude", "");
-        venueDataMap.put("longitude", "");
-        venueDataMap.put("facebookid", "");
-        venueDataMap.put("twitterhandle", "");
-        venueDataMap.put("foursquareid", "");
-        venueDataMap.put("googleid", "");
-        venueDataMap.put("yelpid", "");
         
 
         /* Social Platform buttons */
@@ -102,7 +70,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             Toast.makeText(this, "NFC is not available, using Meadowbrook data", Toast.LENGTH_LONG).show();
 //            finish();
 //            return;
-            venueDataMap.put("id", "11111111111111111111");
+            /* Construct Database Activity */
+            databaseActivity = new DatabaseActivity("11111111111111111111");
         } else {
 	        /* See if application was started from an NFC tag */
 	        Intent intent = getIntent();
@@ -110,16 +79,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 	            NdefMessage msg = (NdefMessage) rawMsgs[0];
 	            NdefRecord uidRecord = msg.getRecords()[0];
-	            venueDataMap.put("id", new String(uidRecord.getPayload()));
+	            databaseActivity = new DatabaseActivity(new String(uidRecord.getPayload()));
 	        }
-        }
-        
-        /* Construct Database Activity */
-        databaseActivity = new DatabaseActivity(venueDataMap.get("id"));
-        
-        /* pull data from enefsy database */
-        if(venueDataMap.get("id") != "") {
-			databaseActivity.getVenueData();
         }
     }
     
@@ -194,7 +155,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
                 	                parameters.putString("message", "I just checked in using Enefsy!");
-                	                parameters.putString("place", venueDataMap.get("facebookid"));
+                	                parameters.putString("place", databaseActivity.getVenueDataMapValue("facebookid"));
                 	                parameters.putString("description", "Enefsy powered Check-in");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", 
                 	                		new PostRequestListener(), state);
@@ -292,7 +253,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		if (isNetworkConnected()) {
 	        		foursquareActivity.initializeApi();
 	        		try {
-	        			foursquareActivity.checkIn(venueDataMap.get("foursquareid")); 
+	        			foursquareActivity.checkIn(databaseActivity.getVenueDataMapValue("foursquareid")); 
 	        		} catch(Exception e) {
 	        			e.printStackTrace();
 	        		}
