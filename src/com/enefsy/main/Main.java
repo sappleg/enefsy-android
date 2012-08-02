@@ -80,6 +80,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	            NdefMessage msg = (NdefMessage) rawMsgs[0];
 	            NdefRecord uidRecord = msg.getRecords()[0];
 	            databaseActivity = new DatabaseActivity(new String(uidRecord.getPayload()));
+	        } else {
+	        	databaseActivity = new DatabaseActivity("11111111111111111111");
 	        }
         }
     }

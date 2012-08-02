@@ -35,8 +35,12 @@
         </activity>       
         
        <activity
-            android:name=".FoursquareActivity" >
-       </activity>        
+           android:name=".FoursquareActivity" >
+       </activity>
+       
+       <activity 
+           android:name=".DatabaseActivity">
+       </activity>
         
     </application>
 
