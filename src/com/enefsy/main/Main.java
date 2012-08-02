@@ -1,24 +1,5 @@
 package com.enefsy.main;
 
-/* Java io package */
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
-/* Apache DB package */
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -89,6 +70,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
 	
+	/* Database querying object */
+	private DatabaseActivity databaseActivity;
+	
 	/* Progress Dialog for Database Query */
 	private ProgressDialog mProgress;
 
@@ -111,6 +95,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         /* Construct Progress Dialog for Database Query */
         mProgress = new ProgressDialog(this);
         
+        
         /* Check for available NFC Adapter */
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
@@ -128,9 +113,12 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             uid = new String(uidRecord.getPayload());
         }
         
+        /* Construct Database Activity */
+        databaseActivity = new DatabaseActivity(uid);
+        
         /* pull data from enefsy database */
         if(uid != "") {
-			new GetVenueDataTask().execute();
+			databaseActivity.getVenueData();
         }
     }
     
@@ -204,9 +192,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	Object state = new Object();
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
-                	                parameters.putString("message", "");
+                	                parameters.putString("message", "I just checked in using Enefsy!");
                 	                parameters.putString("place", facebookid);
-                	                parameters.putString("description", "test test test");
+                	                parameters.putString("description", "Enefsy powered Check-in");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", 
                 	                		new PostRequestListener(), state);
                 	                
@@ -343,79 +331,79 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 
 	}
 	
-	private class GetVenueDataTask extends AsyncTask<Uri, Void, Void> {
-		
-		protected void onPreExecute() {
-			mProgress.setMessage("Connecting to Enefsy ...");
-			mProgress.show();		
-		}
-		
-		protected void onPostExecute(Void result) {
-			mProgress.dismiss();
-		}
-		
-		@Override
-		protected Void doInBackground(Uri... params) {
-
-    		//the uid data to send
-    		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    		nameValuePairs.add(new BasicNameValuePair("id",uid));
-    		String venueData = "";
-    		InputStream is = null;
-		    	
-			//http post
-			try{
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				HttpResponse response = httpclient.execute(httppost);
-				HttpEntity entity = response.getEntity();
-				is = entity.getContent();
-			}catch(Exception e){
-				Log.e("log_tag", "Error in http connection " + e.toString());
-			}
-			
-			//convert response to string
-			try{
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-    	               sb.append(line + "\n");
-				}
-				is.close();
-    	 
-				venueData = sb.toString();
-			}catch(Exception e){
-				Log.e("log_tag", "Error converting result " + e.toString());
-			}
-    	 
-			//parse JSON data
-			try{
-				JSONArray jArray = new JSONArray(venueData);
-				setVenueData(jArray);
-			} catch(JSONException e){
-				Log.e("log_tag", "Error parsing data " + e.toString());
-			}
-			
-			return null;
-		}
-		
-		protected void setVenueData(JSONArray jArray) {
-			try {
-				JSONObject json_data = jArray.getJSONObject(0);
-				name = json_data.getString("name");
-				address = json_data.getString("address");
-				latitude = json_data.getDouble("latitude");
-				longitude = json_data.getDouble("longitude");
-				facebookid = json_data.getString("facebookid");
-				twitterhandle = json_data.getString("twitterhandle");
-				foursquareid = json_data.getString("foursquareid");
-				googleid = json_data.getString("googleid");
-				yelpid = json_data.getString("yelpid");
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	private class GetVenueDataTask extends AsyncTask<Uri, Void, Void> {
+//		
+//		protected void onPreExecute() {
+//			mProgress.setMessage("Connecting to Enefsy ...");
+//			mProgress.show();		
+//		}
+//		
+//		protected void onPostExecute(Void result) {
+//			mProgress.dismiss();
+//		}
+//		
+//		@Override
+//		protected Void doInBackground(Uri... params) {
+//
+//    		//the uid data to send
+//    		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+//    		nameValuePairs.add(new BasicNameValuePair("id",uid));
+//    		String venueData = "";
+//    		InputStream is = null;
+//		    	
+//			//http post
+//			try{
+//				HttpClient httpclient = new DefaultHttpClient();
+//				HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
+//				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//				HttpResponse response = httpclient.execute(httppost);
+//				HttpEntity entity = response.getEntity();
+//				is = entity.getContent();
+//			}catch(Exception e){
+//				Log.e("log_tag", "Error in http connection " + e.toString());
+//			}
+//			
+//			//convert response to string
+//			try{
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
+//				StringBuilder sb = new StringBuilder();
+//				String line = null;
+//				while ((line = reader.readLine()) != null) {
+//    	               sb.append(line + "\n");
+//				}
+//				is.close();
+//    	 
+//				venueData = sb.toString();
+//			}catch(Exception e){
+//				Log.e("log_tag", "Error converting result " + e.toString());
+//			}
+//    	 
+//			//parse JSON data
+//			try{
+//				JSONArray jArray = new JSONArray(venueData);
+//				setVenueData(jArray);
+//			} catch(JSONException e){
+//				Log.e("log_tag", "Error parsing data " + e.toString());
+//			}
+//			
+//			return null;
+//		}
+//		
+//		protected void setVenueData(JSONArray jArray) {
+//			try {
+//				JSONObject json_data = jArray.getJSONObject(0);
+//				name = json_data.getString("name");
+//				address = json_data.getString("address");
+//				latitude = json_data.getDouble("latitude");
+//				longitude = json_data.getDouble("longitude");
+//				facebookid = json_data.getString("facebookid");
+//				twitterhandle = json_data.getString("twitterhandle");
+//				foursquareid = json_data.getString("foursquareid");
+//				googleid = json_data.getString("googleid");
+//				yelpid = json_data.getString("yelpid");
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 }
