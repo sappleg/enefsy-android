@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -32,8 +34,9 @@ public class DatabaseActivity extends Activity {
 	   The default values are stored for Dublin, CA Starbucks */
 	private Map<String, String> venueDataMap;
 	
-	public DatabaseActivity(String uid) {
-		mProgress = new ProgressDialog(this);
+	public DatabaseActivity(Context context, String uid) {
+		mProgress = new ProgressDialog(context);
+		venueDataMap = new HashMap<String, String>();
 
         /* Pre-populate Map containing venue specific data */
         venueDataMap.put("id", uid);

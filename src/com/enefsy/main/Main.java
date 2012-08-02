@@ -71,7 +71,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 //            finish();
 //            return;
             /* Construct Database Activity */
-            databaseActivity = new DatabaseActivity("11111111111111111111");
+            databaseActivity = new DatabaseActivity(this, "11111111111111111112");
         } else {
 	        /* See if application was started from an NFC tag */
 	        Intent intent = getIntent();
@@ -79,9 +79,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 	            NdefMessage msg = (NdefMessage) rawMsgs[0];
 	            NdefRecord uidRecord = msg.getRecords()[0];
-	            databaseActivity = new DatabaseActivity(new String(uidRecord.getPayload()));
+	            databaseActivity = new DatabaseActivity(this, new String(uidRecord.getPayload()));
 	        } else {
-	        	databaseActivity = new DatabaseActivity("11111111111111111111");
+	        	databaseActivity = new DatabaseActivity(this, "11111111111111111112");
 	        }
         }
     }
