@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,12 +28,24 @@ public class DatabaseActivity extends Activity {
 	//Progress dialog for retrieving data from enefsy database
 	private ProgressDialog mProgress;
 	
-	//String to hold Unique ID to query enefsy database
-	private String uid;
+	/* Hashmap to contain all venue specific data.
+	   The default values are stored for Dublin, CA Starbucks */
+	private Map<String, String> venueDataMap;
 	
 	public DatabaseActivity(String uid) {
 		mProgress = new ProgressDialog(this);
-		this.uid = uid;
+
+        /* Pre-populate Map containing venue specific data */
+        venueDataMap.put("id", uid);
+        venueDataMap.put("name", "Starbucks");
+        venueDataMap.put("address", "4930 Dublin Boulevard, Dublin, CA 94568");
+        venueDataMap.put("latitude", "37.704025");
+        venueDataMap.put("longitude", "-121.884941");
+        venueDataMap.put("facebookid", "233762670072788");
+        venueDataMap.put("twitterhandle", "@Starbucks");
+        venueDataMap.put("foursquareid", "4ac0508af964a5202e9420e3");
+        venueDataMap.put("googleid", "100031254040654670562");
+        venueDataMap.put("yelpid", "starbucks-coffee-dublin-2");
 	}
 	
 	public void getVenueData() {
@@ -56,7 +69,7 @@ public class DatabaseActivity extends Activity {
 
     		//the uid data to send
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    		nameValuePairs.add(new BasicNameValuePair("id",uid));
+    		nameValuePairs.add(new BasicNameValuePair("id",venueDataMap.get("id")));
     		String venueData = "";
     		InputStream is = null;
 		    	
@@ -101,15 +114,15 @@ public class DatabaseActivity extends Activity {
 		protected void setVenueData(JSONArray jArray) {
 			try {
 				JSONObject json_data = jArray.getJSONObject(0);
-				name = json_data.getString("name");
-				address = json_data.getString("address");
-				latitude = json_data.getDouble("latitude");
-				longitude = json_data.getDouble("longitude");
-				facebookid = json_data.getString("facebookid");
-				twitterhandle = json_data.getString("twitterhandle");
-				foursquareid = json_data.getString("foursquareid");
-				googleid = json_data.getString("googleid");
-				yelpid = json_data.getString("yelpid");
+				venueDataMap.put("name", json_data.getString("name"));
+				venueDataMap.put("address", json_data.getString("address"));
+				venueDataMap.put("latitude", json_data.getString("latitude"));
+				venueDataMap.put("longitude", json_data.getString("longitude"));
+				venueDataMap.put("facebookid", json_data.getString("facebookid"));
+				venueDataMap.put("twitterhandle", json_data.getString("twitterhandle"));
+				venueDataMap.put("foursquareid", json_data.getString("foursquareid"));
+				venueDataMap.put("googleid", json_data.getString("googleid"));
+				venueDataMap.put("yelpid", json_data.getString("yelpid"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
