@@ -52,8 +52,6 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import com.enefsy.main.MimeType;
-import com.enefsy.main.R;
 
 /* Foursquare depdendencies */
 import com.enefsy.foursquare.FoursquareActivity;
@@ -126,7 +124,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         
         /* See if application was started from an NFC tag */
         Intent intent = getIntent();
-        if(intent.getType() != null && intent.getType().equals(MimeType.NFC_DEMO)) {
+        if(intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main")) {
         	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage msg = (NdefMessage) rawMsgs[0];
             NdefRecord uidRecord = msg.getRecords()[0];
@@ -347,83 +345,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 			return false;
 
 	}
-
-
-//    private class GetVenueData extends AsyncTask<Uri, Void, Void> {
-//    	
-//		protected void onPreExecute() {
-//			mProgress.setMessage("Connecting to Enefsy...");
-//			//mProgress.show();		
-//		}
-//
-//    	@Override
-//		protected Void doInBackground(Uri... params) {
-//    		
-//    		//the uid data to send
-//    		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-//    		nameValuePairs.add(new BasicNameValuePair("id",uid));
-//    		String venueData = "";
-//    		InputStream is = null;
-//		    	
-//			//http post
-//			try{
-//				HttpClient httpclient = new DefaultHttpClient();
-//				HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
-//				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//				HttpResponse response = httpclient.execute(httppost);
-//				HttpEntity entity = response.getEntity();
-//				is = entity.getContent();
-//			}catch(Exception e){
-//				Log.e("log_tag", "Error in http connection " + e.toString());
-//			}
-//			
-//			//convert response to string
-//			try{
-//				BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
-//				StringBuilder sb = new StringBuilder();
-//				String line = null;
-//				while ((line = reader.readLine()) != null) {
-//    	               sb.append(line + "\n");
-//				}
-//				is.close();
-//    	 
-//				venueData = sb.toString();
-//			}catch(Exception e){
-//				Log.e("log_tag", "Error converting result " + e.toString());
-//			}
-//    	 
-//			//parse JSON data
-//			try{
-//				JSONArray jArray = new JSONArray(venueData);
-//				setVenueData(jArray);
-//			} catch(JSONException e){
-//				Log.e("log_tag", "Error parsing data " + e.toString());
-//			}
-//			return null;
-//		}
-//    	
-//        protected void onPostExecute(Void result) {
-//            mTextView.setText("Database Query Successful");
-//            mProgress.dismiss();
-//        }
-//        
-//        protected void setVenueData(JSONArray jArray) {
-//        	try {
-//				JSONObject json_data = jArray.getJSONObject(0);
-//				name = json_data.getString("name");
-//				address = json_data.getString("address");
-//				latitude = json_data.getDouble("latitude");
-//				longitude = json_data.getDouble("longitude");
-//				facebookid = json_data.getString("facebookid");
-//				twitterhandle = json_data.getString("twitterhandle");
-//				foursquareid = json_data.getString("foursquareid");
-//				googleid = json_data.getString("googleid");
-//				yelpid = json_data.getString("yelpid");
-//			} catch (JSONException e) {
-//				e.printStackTrace();
-//			}
-//        }
-//    }
 	
 	private class GetVenueDataTask extends AsyncTask<Uri, Void, Void> {
 		
