@@ -50,7 +50,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private NfcAdapter mNfcAdapter;
 	
 	/* String to hold the Unique ID of the venue */
-	private String uid = "11111111111111111111";
+	private String uid = "";
 	
 	/* Return String containing venue specific database data.
 	   The default values are stored for Dublin, CA Starbucks */
@@ -100,17 +100,18 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
             Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        
-        /* See if application was started from an NFC tag */
-        Intent intent = getIntent();
-        if(intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main")) {
-        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage msg = (NdefMessage) rawMsgs[0];
-            NdefRecord uidRecord = msg.getRecords()[0];
-            uid = new String(uidRecord.getPayload());
+//            finish();
+//            return;
+            uid = "11111111111111111111";
+        } else {
+	        /* See if application was started from an NFC tag */
+	        Intent intent = getIntent();
+	        if(intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main")) {
+	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+	            NdefMessage msg = (NdefMessage) rawMsgs[0];
+	            NdefRecord uidRecord = msg.getRecords()[0];
+	            uid = new String(uidRecord.getPayload());
+	        }
         }
         
         /* Construct Database Activity */
