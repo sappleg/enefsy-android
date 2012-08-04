@@ -19,19 +19,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.Toast;
 
+@TargetApi(10)
 public class DatabaseActivity extends Activity {
-	//Progress dialog for retrieving data from enefsy database
-//	private ProgressDialog mProgress;
-	
 	/* Hashmap to contain all venue specific data.
 	   The default values are stored for Dublin, CA Starbucks */
 	private Map<String, String> venueDataMap;
@@ -42,24 +43,39 @@ public class DatabaseActivity extends Activity {
 	/* String for UID */
 	private String uid;
 	
-	/* Text View to hold name of venue */
-	//private TextView mTextView;
+    /* NFC Adapter to pull UID message from tag */
+	private NfcAdapter mNfcAdapter;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.launch);
         
-        /* Temp hardcode of uid */
-        uid = "11111111111111111111";
-		/* Set content view */
-//		setContentView(R.layout.main);
-		
-//		mProgress = new ProgressDialog(this);
+        /* Check for available NFC Adapter */
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        
+        /* Declare a Hashmap to hold venue specific data */
 		venueDataMap = new HashMap<String, String>();
 		
-        /* Declare textview to show venue name */
-//        mTextView = (TextView)findViewById(R.id.uid_view);
+        if (mNfcAdapter == null) {
+            Toast.makeText(this, "NFC is not available, using Meadowbrook data", Toast.LENGTH_LONG).show();
+//            finish();
+//            return;
+            
+            /* Construct Database Activity */
+            uid = "11111111111111111111";
+        } else {
+	        /* See if application was started from an NFC tag */
+	        Intent intent = getIntent();
+	        if(intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main")) {
+	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+	            NdefMessage msg = (NdefMessage) rawMsgs[0];
+	            NdefRecord uidRecord = msg.getRecords()[0];
+	            uid = new String(uidRecord.getPayload());
+	        } else {
+	            uid = "11111111111111111111";
+	        }
+        }
 
         /* Pre-populate Map containing venue specific data */
         venueDataMap.put("id", uid);
@@ -77,40 +93,35 @@ public class DatabaseActivity extends Activity {
         mGetVenueDataTask.execute();
 	}
 	
-	//Private inner class to handle the activity of querying the enefsy database
+	/* Private inner class to handle the activity of querying the enefsy database */
 	private class GetVenueDataTask extends AsyncTask<Void, Void, Void> {
 		
-		protected void onPreExecute() {
-//			mProgress.setMessage("Connecting to Enefsy ...");
-//			mProgress.show();
-		}
+		/* Method to execute prior to AsyncTask execution */
+		protected void onPreExecute() {	}
 		
 		protected void onPostExecute(Void unused) {
-//			mProgress.dismiss();
-			
-//			setTextView(getVenueDataMapValue("name"));
 			
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(3000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			Intent intent = new Intent(getApplicationContext(), Main.class);
+			intent.putExtra("name", getVenueDataMapValue("name"));
 			startActivity(intent);
 		}
 		
 		@Override
 		protected Void doInBackground(Void... unused) {
 
-    		//the uid data to send
+    		/* UID data to send */
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
     		nameValuePairs.add(new BasicNameValuePair("id",venueDataMap.get("id")));
     		String venueData = "";
     		InputStream is = null;
 		    	
-			//http post
+			/* HTTP post */
 			try{
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
@@ -122,7 +133,7 @@ public class DatabaseActivity extends Activity {
 				Log.e("log_tag", "Error in http connection " + e.toString());
 			}
 			
-			//convert response to string
+			/* convert response to string */
 			try{
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
 				StringBuilder sb = new StringBuilder();
@@ -137,7 +148,7 @@ public class DatabaseActivity extends Activity {
 				Log.e("log_tag", "Error converting result " + e.toString());
 			}
     	 
-			//parse JSON data
+			/* parse JSON data */
 			try{
 				JSONArray jArray = new JSONArray(venueData);
 				setVenueData(jArray);
@@ -170,8 +181,4 @@ public class DatabaseActivity extends Activity {
 		String value = venueDataMap.get(key);
 		return value;
 	}
-	
-//	public void setTextView(String s) {
-//		Main.this.setTextView(getVenueDataMapValue("name"));
-//	}
 }

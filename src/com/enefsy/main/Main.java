@@ -8,11 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,9 +28,6 @@ import com.enefsy.foursquare.FoursquareActivity;
 
 @TargetApi(14)
 public class Main extends Activity implements DialogListener, OnClickListener {
-	
-	/* String to contain UID from enefsy tag */
-	private String uid;
 
 	/* Image buttons for front screen */
 	private ImageButton facebook_button;
@@ -44,9 +37,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	/* Creates Facebook Objects with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
 	private AsyncFacebookRunner asyncFacebookClient;
-	
-    /* NFC Adapter to pull UID message from tag */
-	private NfcAdapter mNfcAdapter;
 
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
@@ -62,6 +52,10 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        /* Get data from database activity */
+        Intent i = getIntent();
+        String name = i.getStringExtra("name");
+        
         /* Declare textview to show venue name */
         mTextView = (TextView)findViewById(R.id.uid_view);
 
@@ -72,30 +66,8 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
-        
-        /* Check for available NFC Adapter */
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null) {
-            Toast.makeText(this, "NFC is not available, using Meadowbrook data", Toast.LENGTH_LONG).show();
-//            finish();
-//            return;
-            /* Construct Database Activity */
-            uid = "11111111111111111112";
-        } else {
-	        /* See if application was started from an NFC tag */
-	        Intent intent = getIntent();
-	        if(intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main")) {
-	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-	            NdefMessage msg = (NdefMessage) rawMsgs[0];
-	            NdefRecord uidRecord = msg.getRecords()[0];
-	            uid = new String(uidRecord.getPayload());
-	        } else {
-	            uid = "11111111111111111112";
-	        }
-        }
-        
-//		databaseActivity = new DatabaseActivity(this, uid);
 
+        setTextView(name);
     }
     
     @Override
