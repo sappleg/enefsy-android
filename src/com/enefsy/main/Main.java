@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /* Facebook dependencies */
@@ -31,13 +32,16 @@ import com.enefsy.foursquare.FoursquareActivity;
 
 @TargetApi(14)
 public class Main extends Activity implements DialogListener, OnClickListener {
+	
+	/* String to contain UID from enefsy tag */
+	private String uid;
 
 	/* Image buttons for front screen */
 	private ImageButton facebook_button;
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
 
-	/* Creates a Facebook Object with the Enefsy Facebook App ID */
+	/* Creates Facebook Objects with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
 	private AsyncFacebookRunner asyncFacebookClient;
 	
@@ -49,12 +53,17 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	
 	/* Database querying object */
 	private DatabaseActivity databaseActivity;
+	
+	/* TextView to hold name of venue */
+	private TextView mTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        /* Declare textview to show venue name */
+        mTextView = (TextView)findViewById(R.id.uid_view);
 
         /* Social Platform buttons */
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
@@ -71,7 +80,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 //            finish();
 //            return;
             /* Construct Database Activity */
-            databaseActivity = new DatabaseActivity(this, "11111111111111111112");
+            uid = "11111111111111111112";
         } else {
 	        /* See if application was started from an NFC tag */
 	        Intent intent = getIntent();
@@ -79,11 +88,14 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 	            NdefMessage msg = (NdefMessage) rawMsgs[0];
 	            NdefRecord uidRecord = msg.getRecords()[0];
-	            databaseActivity = new DatabaseActivity(this, new String(uidRecord.getPayload()));
+	            uid = new String(uidRecord.getPayload());
 	        } else {
-	        	databaseActivity = new DatabaseActivity(this, "11111111111111111112");
+	            uid = "11111111111111111112";
 	        }
         }
+        
+//		databaseActivity = new DatabaseActivity(this, uid);
+
     }
     
     @Override
@@ -293,5 +305,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 		else
 			return false;
 
+	}
+	
+	public void setTextView(String s) {
+		mTextView.setText(s);
 	}
 }

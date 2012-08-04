@@ -22,51 +22,87 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 public class DatabaseActivity extends Activity {
 	//Progress dialog for retrieving data from enefsy database
-	private ProgressDialog mProgress;
+//	private ProgressDialog mProgress;
 	
 	/* Hashmap to contain all venue specific data.
 	   The default values are stored for Dublin, CA Starbucks */
 	private Map<String, String> venueDataMap;
 	
-	public DatabaseActivity(Context context, String uid) {
-		mProgress = new ProgressDialog(context);
+	/* Object representing the AsyncTask itself */
+	private GetVenueDataTask mGetVenueDataTask;
+	
+	/* String for UID */
+	private String uid;
+	
+	/* Text View to hold name of venue */
+	//private TextView mTextView;
+	
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.launch);
+        
+        /* Temp hardcode of uid */
+        uid = "11111111111111111111";
+		/* Set content view */
+//		setContentView(R.layout.main);
+		
+//		mProgress = new ProgressDialog(this);
 		venueDataMap = new HashMap<String, String>();
+		
+        /* Declare textview to show venue name */
+//        mTextView = (TextView)findViewById(R.id.uid_view);
 
         /* Pre-populate Map containing venue specific data */
         venueDataMap.put("id", uid);
-        venueDataMap.put("name", "Starbucks");
-        venueDataMap.put("address", "4930 Dublin Boulevard, Dublin, CA 94568");
-        venueDataMap.put("latitude", "37.704025");
-        venueDataMap.put("longitude", "-121.884941");
-        venueDataMap.put("facebookid", "233762670072788");
-        venueDataMap.put("twitterhandle", "@Starbucks");
-        venueDataMap.put("foursquareid", "4ac0508af964a5202e9420e3");
-        venueDataMap.put("googleid", "100031254040654670562");
-        venueDataMap.put("yelpid", "starbucks-coffee-dublin-2");
+        venueDataMap.put("name", "");
+        venueDataMap.put("address", "");
+        venueDataMap.put("latitude", "");
+        venueDataMap.put("longitude", "");
+        venueDataMap.put("facebookid", "");
+        venueDataMap.put("twitterhandle", "");
+        venueDataMap.put("foursquareid", "");
+        venueDataMap.put("googleid", "");
+        venueDataMap.put("yelpid", "");
 
-		new GetVenueDataTask().execute();
+        mGetVenueDataTask = new GetVenueDataTask();
+        mGetVenueDataTask.execute();
 	}
 	
 	//Private inner class to handle the activity of querying the enefsy database
-	private class GetVenueDataTask extends AsyncTask<Uri, Void, Void> {
+	private class GetVenueDataTask extends AsyncTask<Void, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgress.setMessage("Connecting to Enefsy ...");
-			mProgress.show();		
+//			mProgress.setMessage("Connecting to Enefsy ...");
+//			mProgress.show();
 		}
 		
-		protected void onPostExecute(Void result) {
-			mProgress.dismiss();
+		protected void onPostExecute(Void unused) {
+//			mProgress.dismiss();
+			
+//			setTextView(getVenueDataMapValue("name"));
+			
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Intent intent = new Intent(getApplicationContext(), Main.class);
+			startActivity(intent);
 		}
 		
 		@Override
-		protected Void doInBackground(Uri... params) {
+		protected Void doInBackground(Void... unused) {
 
     		//the uid data to send
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -131,6 +167,11 @@ public class DatabaseActivity extends Activity {
 	}
 	
 	public String getVenueDataMapValue(String key) {
-		return venueDataMap.get(key);
+		String value = venueDataMap.get(key);
+		return value;
 	}
+	
+//	public void setTextView(String s) {
+//		Main.this.setTextView(getVenueDataMapValue("name"));
+//	}
 }
