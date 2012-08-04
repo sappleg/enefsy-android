@@ -39,7 +39,7 @@
        </activity>
        
        <activity 
-           android:name=".DatabaseActivity">
+           android:name=".DatabaseActivity" >
        </activity>
         
     </application>
