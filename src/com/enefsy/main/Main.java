@@ -21,6 +21,7 @@ import org.json.JSONObject;
 /* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,7 +52,6 @@ import com.enefsy.foursquare.FoursquareActivity;
 import com.enefsy.main.MimeType;
 import com.enefsy.main.R;
 import com.enefsy.twitter.TwitterActivity;
-import com.enefsy.twitter.TwitterActivity.TwitterDialogListener;
 
 /* Foursquare depdendencies */
 
@@ -71,16 +71,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private NfcAdapter mNfcAdapter;
 	
 	/* String to hold the Unique ID of the venue */
-	private String uid = "";
+	private String uid = "11111111111111111111";
 	
 	/* Return String containing venue specific db data */
 	private String name = "";
 	private String address = "";
 	private double latitude = 0.0;
 	private double longitude = 0.0;
-	private String facebookid = "178106272217011";
+	private String facebookid = "";
 	private String twitterhandle = "";
-	private String foursquareid = "4ae5c6a0f964a520f4a121e3";
+	private String foursquareid = "";
 	private String googleid = "";
 	private String yelpid = "";
 	
@@ -90,6 +90,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
 	private TwitterActivity twitterActivity;
+	
+	/* Progress Dialog for Database Query */
+	private ProgressDialog mProgress;
 
 	
     @Override
@@ -108,14 +111,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
         
+        /* Construct Progress Dialog for Database Query */
+        mProgress = new ProgressDialog(getApplicationContext());
         
         /* Check for available NFC Adapter */
-//        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-//        if (mNfcAdapter == null) {
-//            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
 //            finish();
 //            return;
-//        }
+        }
         
         /* See if application was started from an NFC tag */
         Intent intent = getIntent();
@@ -258,16 +263,27 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 
         	/* Create a new twitter activity */
         	twitterActivity	= new TwitterActivity(this);
-//        	twitterActivity.setListener(twitterLoginDialogListener);
 
-    		if (!twitterActivity.hasAccessToken()) {    			
-    			twitterActivity.authorize();
+    		if (!twitterActivity.hasAccessToken()) {
+        		/* If the phone is connected to the internet, try to authorize the user */
+        		if (isNetworkConnected())
+        			twitterActivity.authorize();
+
+        		/* If no internet connection is available, alert user */
+        		else
+        			Toast.makeText(this, "Unable to connect to Foursquare. Please check your network settings.", Toast.LENGTH_LONG).show();
     		}
 
     		else {
-    			twitterActivity.configureToken();
-				twitterActivity.updateStatus("I'm at @Tullys_Shops -- via @enefsy #PleasantonCATullys");
-    			Toast.makeText(this, "You have already logged into Twitter", Toast.LENGTH_LONG).show();
+        		/* If the phone is connected to the internet, try to authorize the user */
+        		if (isNetworkConnected()) {
+	    			twitterActivity.configureToken();
+					twitterActivity.updateStatus("I'm at @Tullys_Shops -- via @enefsy #PleasantonCATullys");
+        		}
+
+        		/* If no internet connection is available, alert user */
+        		else
+        			Toast.makeText(this, "Unable to connect to Twitter. Please check your network settings.", Toast.LENGTH_LONG).show();
     		}        	
         }
         
@@ -343,10 +359,15 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	}
 
 
-    private class GetVenueData extends AsyncTask<String, Void, String> {
+    private class GetVenueData extends AsyncTask<Uri, Void, Void> {
+    	
+		protected void onPreExecute() {
+			mProgress.setMessage("Connecting to Enefsy...");
+			//mProgress.show();		
+		}
 
     	@Override
-		protected String doInBackground(String... uids) {
+		protected Void doInBackground(Uri... params) {
     		
     		//the uid data to send
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -388,14 +409,15 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 			} catch(JSONException e){
 				Log.e("log_tag", "Error parsing data " + e.toString());
 			}
-
-		return venueData;
+			return null;
 		}
     	
-        @Override
-        protected void onPostExecute(String s) {
+    	
+        protected void onPostExecute(Void result) {
             mTextView.setText("Database Query Successful");
+            mProgress.dismiss();
         }
+        
         
         protected void setVenueData(JSONArray jArray) {
         	try {
@@ -414,28 +436,4 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 			}
         }
     }
-    
-    
-//	private final TwitterDialogListener twitterLoginDialogListener = new TwitterDialogListener() {
-//		
-//		String redirectUrl;
-//
-//		@Override
-//		public void onComplete() {
-//			String username = twitterActivity.getUsername();
-//			username = (username.equals("")) ? "No Name" : username;
-//			Toast.makeText(Main.this, "Connected to Twitter as " + username, Toast.LENGTH_LONG).show();
-////			twitterActivity.processToken();
-//		}
-//		
-//		@Override
-//		public void onError(String value) {
-//			Toast.makeText(Main.this, "Twitter connection failed", Toast.LENGTH_LONG).show();
-//		}
-//		@Override
-//		public void setRedirectURL(String url) {
-//			this.redirectUrl = url;
-//		}
-//
-//	};
 }

@@ -115,8 +115,9 @@ public class TwitterActivity {
 	public void updateStatus(String status){
 		try {
 			mTwitter.updateStatus(status);
+			new TwitterUpdateStatusTask().execute();
 		} 
-		catch (TwitterException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -186,13 +187,6 @@ public class TwitterActivity {
 		}
 	};
 
-	
-	public interface TwitterDialogListener {
-		public void onComplete();
-		void setRedirectURL(String url);
-		public void onError(String value);
-	}
-	
 	
 	private class TwitterAuthorizeTask extends AsyncTask<Uri, Void, Void> {
 		
@@ -278,5 +272,45 @@ public class TwitterActivity {
 		
 			return null;
 		}		
+	}
+	
+	
+	private class TwitterUpdateStatusTask extends AsyncTask<Uri, Void, Void> {
+		
+		protected void onPreExecute() {
+			mProgressDialog.setMessage("Tweeting...");
+			mProgressDialog.show();		
+			configureToken();
+		}
+		
+		protected void onPostExecute(Void result) {
+			mProgressDialog.dismiss();
+		}
+		
+		@Override
+		protected Void doInBackground(Uri... params) {
+
+			/*FIXME: This is simply a placeholder for now since I could not
+					make the TwitterFactory.updateStatus(status) method work inside
+					of an AsyncTask, but I still want to display a progress dialog
+					while updating the user's status
+			*/
+			try {
+				Thread.sleep(3000);
+			} 
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			return null;
+		}		
+	}
+	
+	
+	
+	public interface TwitterDialogListener {
+		public void onComplete();
+		void setRedirectURL(String url);
+		public void onError(String value);
 	}
 }
