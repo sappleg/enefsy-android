@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Facebook"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="/home/spencer/eclipse/external/zxing-2.0/core/core.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
