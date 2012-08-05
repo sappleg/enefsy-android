@@ -94,7 +94,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         /* Declare textview to show venue name */
         mTextView = (TextView)findViewById(R.id.uid_view);
 
-        setTextView(getVenueDataMapValue("name"));
+        //setTextView(getVenueDataMapValue("name"));
     }
     
     @Override
@@ -112,8 +112,10 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     			String contents = intent.getStringExtra("SCAN_RESULT");
     	        String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 // Handle successful scan
+    	        setTextView(contents);
     		} else if (resultCode == RESULT_CANCELED) {
     			// Handle cancel
+    			setTextView("Failed scan");
     		}
     	}
     }
