@@ -21,11 +21,7 @@
         <activity
             android:name=".Main"
             android:label="@string/app_name" >
-        </activity>       
-        
-       <activity
-           android:name=".FoursquareActivity" >
-       </activity>
+        </activity>
        
        <activity 
            android:name=".DatabaseActivity" >
@@ -40,8 +36,16 @@
       			<data android:mimeType="application/vnd.enefsy.main"/>
       			<category android:name="android.intent.category.DEFAULT"/>
     		</intent-filter>
-       </activity>
+       </activity>     
         
+       <activity
+            android:name=".FoursquareActivity" >
+       </activity>        
+
+       <activity
+            android:name=".TwitterActivity" >
+       </activity>
+       
     </application>
 
 </manifest>

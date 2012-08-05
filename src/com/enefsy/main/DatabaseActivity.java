@@ -60,7 +60,7 @@ public class DatabaseActivity extends Activity {
 //            return;
             
             /* Add default UID to venue data map */
-            venueDataMap.put("uid", "11111111111111111111");
+            venueDataMap.put("uid", "11111111111111111112");
         } else {
 	        /* See if application was started from an NFC tag */
 	        Intent intent = getIntent();
@@ -71,7 +71,7 @@ public class DatabaseActivity extends Activity {
 	            venueDataMap.put("uid", new String(uidRecord.getPayload()));
 	        } else {
 	            /* Add default UID to venue data map */
-	            venueDataMap.put("uid", "11111111111111111111");
+	            venueDataMap.put("uid", "11111111111111111112");
 	        }
         }
 

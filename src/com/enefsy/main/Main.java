@@ -3,6 +3,7 @@ package com.enefsy.main;
 import java.util.HashMap;
 import java.util.Map;
 
+/* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -25,9 +26,10 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
+import com.enefsy.foursquare.FoursquareActivity;
+import com.enefsy.twitter.TwitterActivity;
 
 /* Foursquare depdendencies */
-import com.enefsy.foursquare.FoursquareActivity;
 
 @TargetApi(14)
 public class Main extends Activity implements DialogListener, OnClickListener {
@@ -43,6 +45,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
+	private TwitterActivity twitterActivity;
 	
 	/* Database querying object */
 	private DatabaseActivity databaseActivity;
@@ -54,6 +57,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	   The default values are stored for Dublin, CA Starbucks */
 	private Map<String, String> venueData;
 
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,7 +164,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
                 	            	// The following code will make an automatic status update
                 	                Bundle parameters = new Bundle();
                 	                parameters.putString("message", "I just checked in using Enefsy!");
-                	                parameters.putString("place", databaseActivity.getVenueDataMapValue("facebookid"));
+                	                String tmp = getVenueDataMapValue("facebookid");
+//                	                parameters.putString("place", databaseActivity.getVenueDataMapValue("facebookid"));
+                	                parameters.putString("place", tmp);
                 	                parameters.putString("description", "Enefsy powered Check-in");
                 	                asyncFacebookClient.request("me/feed", parameters, "POST", 
                 	                		new PostRequestListener(), state);
@@ -212,19 +218,31 @@ public class Main extends Activity implements DialogListener, OnClickListener {
          *********************************************************************/
         /* The user clicks the Twitter button */
         else if (v == twitter_button) {
-            String message = "Your message to post";
-            try {
-                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                sharingIntent.setClassName("com.twitter.android","com.twitter.android.PostActivity");
-                sharingIntent.putExtra(Intent.EXTRA_TEXT, message);
-                startActivity(sharingIntent);
-            } catch (Exception e) {
-                Intent i = new Intent();
-                i.putExtra(Intent.EXTRA_TEXT, message);
-                i.setAction(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("https://mobile.twitter.com/compose/tweet"));
-                startActivity(i);
-            }
+
+        	/* Create a new twitter activity */
+        	twitterActivity	= new TwitterActivity(this);
+
+    		if (!twitterActivity.hasAccessToken()) {
+        		/* If the phone is connected to the internet, try to authorize the user */
+        		if (isNetworkConnected())
+        			twitterActivity.authorize();
+
+        		/* If no internet connection is available, alert user */
+        		else
+        			Toast.makeText(this, "Unable to connect to Twitter. Please check your network settings.", Toast.LENGTH_LONG).show();
+    		}
+
+    		else {
+        		/* If the phone is connected to the internet, try to authorize the user */
+        		if (isNetworkConnected()) {
+	    			twitterActivity.configureToken();
+					twitterActivity.updateStatus("I'm at " + getVenueDataMapValue("twitterhandle") + " -- via @enefsy");
+        		}
+
+        		/* If no internet connection is available, alert user */
+        		else
+        			Toast.makeText(this, "Unable to connect to Twitter. Please check your network settings.", Toast.LENGTH_LONG).show();
+    		}        	
         }
         
         /**********************************************************************

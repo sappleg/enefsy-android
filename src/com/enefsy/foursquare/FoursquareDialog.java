@@ -1,5 +1,8 @@
 package com.enefsy.foursquare;
 
+import com.enefsy.foursquare.FoursquareActivity;
+import com.enefsy.foursquare.FoursquareDialog;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 
