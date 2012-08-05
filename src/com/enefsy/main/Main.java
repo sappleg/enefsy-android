@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton facebook_button;
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
+	
+	/* Button to invoke QR code scan */
+	private Button qr_button;
 
 	/* Creates Facebook Objects with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
