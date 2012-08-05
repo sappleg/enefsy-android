@@ -18,6 +18,8 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 
@@ -25,7 +27,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 import android.view.Window;
-
 import java.net.URL;
 
 
@@ -36,54 +37,60 @@ public class TwitterActivity {
 	private AccessToken mAccessToken;
 	private CommonsHttpOAuthConsumer mHttpOauthConsumer;
 	private DefaultOAuthProvider mHttpOauthprovider;
-	private String mConsumerKey;
-	private String mSecretKey;
 	private ProgressDialog mProgressDialog;
 	private TwitterDialogListener mListener;
 	private Context context;
 	private boolean mInit = true;
+	private String tokenedUrl;
 
+	private static final String TWITTER_CONSUMER_KEY = "7yqQQggvKFcb8U3CYmiOQ";
+	private static final String TWITTER_SECRET_KEY = "61MYne9XJphKQefGnZTWIBvLmZiT8AMV948DkjZYY";
 	public static final String TWITTER_AUTH_URL = "http://twitter.com/oauth/authorize";
 	public static final String TWITTER_REQUEST_URL = "http://twitter.com/oauth/request_token";
 	public static final String TWITTER_TOKEN_URL = "http://twitter.com/oauth/access_token";
 	public static final String TWITTER_CALLBACK_URL = "http://www.enefsy.com";
+
 	private static final String TAG = "TwitterActivity";
 
 	
-	public TwitterActivity(Context context, String consumerKey, String secretKey) {
+	public TwitterActivity(Context context) {
 
 		this.context = context;
 		
 		mTwitter = new TwitterFactory().getInstance();
 		mSession = new TwitterSession(context);
-		mProgressDialog	= new ProgressDialog(context);
-		
+		mProgressDialog	= new ProgressDialog(context);		
 		mProgressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		mListener = new TwitterDialogListener() {
+					
+			@Override
+			public void onComplete() { 
+				processToken();
+			}
+			
+			@Override
+			public void onError(String value) { }
+
+			@Override
+			public void setRedirectURL(String url) {
+				tokenedUrl = url;
+			}
+		};
 		
-		mConsumerKey = consumerKey;
-		mSecretKey = secretKey;
-	
-		mHttpOauthConsumer = new CommonsHttpOAuthConsumer(mConsumerKey, mSecretKey);
-		mHttpOauthprovider = new DefaultOAuthProvider(TWITTER_REQUEST_URL,
-													 TWITTER_TOKEN_URL,
-													 TWITTER_AUTH_URL);
+		mHttpOauthConsumer = new CommonsHttpOAuthConsumer(TWITTER_CONSUMER_KEY, TWITTER_SECRET_KEY);
+		mHttpOauthprovider = new DefaultOAuthProvider(TWITTER_REQUEST_URL, TWITTER_TOKEN_URL, TWITTER_AUTH_URL);
 		
 		mAccessToken = mSession.getAccessToken();		
-//		configureToken();
 	}
 	
 	
-	public void setListener(TwitterDialogListener listener) {
-		mListener = listener;
-	}
-	
-	
-	@SuppressWarnings("deprecation")
 	public void configureToken() {
 
 		if (mAccessToken != null) {
+
 			if (mInit) {
-				mTwitter.setOAuthConsumer(mConsumerKey, mSecretKey);
+				mTwitter.setOAuthConsumer(TWITTER_CONSUMER_KEY, TWITTER_SECRET_KEY);
 				mInit = false;
 			}
 			
@@ -103,85 +110,25 @@ public class TwitterActivity {
 			mAccessToken = null;
 		}
 	}
+		
 	
-	
-	public String getUsername() {
-		return mSession.getUsername();
-	}
-	
-	
-	public void updateStatus(String status) throws Exception {
+	public void updateStatus(String status){
 		try {
 			mTwitter.updateStatus(status);
 		} 
 		catch (TwitterException e) {
-			throw e;
+			e.printStackTrace();
 		}
 	}
 	
 	
-	public void authorize() {
-
-		mProgressDialog.setMessage("Initializing ...");
-		mProgressDialog.show();
-		
-		new Thread() {
-			@Override
-			public void run() {
-				String authUrl = "";
-				int what = 1;
-				
-				try {
-					authUrl = mHttpOauthprovider.retrieveRequestToken(mHttpOauthConsumer, TWITTER_TOKEN_URL);	
-					what = 0;
-					Log.d(TAG, "Request token url " + authUrl);
-				} 
-				catch (Exception e) {
-					Log.d(TAG, "Failed to get request token");
-					e.printStackTrace();
-				}
-				
-				mHandler.sendMessage(mHandler.obtainMessage(what, 1, 0, authUrl));
-//				processToken();
-			}
-		}.start();
+	public void authorize() {		
+		new TwitterAuthorizeTask().execute();
 	}
 
 	
-	public void processToken(String url)  {
-
-		mProgressDialog.setMessage("Finalizing ...");
-		mProgressDialog.show();
-		
-		final String verifier = getVerifier(url);
-
-		new Thread() {
-			
-			@Override
-			public void run() {
-				int what = 1;
-				
-				try {
-					mHttpOauthprovider.retrieveAccessToken(mHttpOauthConsumer, verifier);
-		
-					mAccessToken = new AccessToken(mHttpOauthConsumer.getToken(), mHttpOauthConsumer.getTokenSecret());
-				
-					configureToken();
-				
-					User user = mTwitter.verifyCredentials();
-				
-			        mSession.storeAccessToken(mAccessToken, user.getName());
-			        
-			        what = 0;
-				} catch (Exception e){
-					Log.d(TAG, "Error getting access token");
-					
-					e.printStackTrace();
-				}
-				
-				mHandler.sendMessage(mHandler.obtainMessage(what, 2, 0));
-			}
-		}.start();
+	public void processToken()  {
+		new TwitterProcessTokenTask().execute();
 	}
 	
 	
@@ -190,7 +137,7 @@ public class TwitterActivity {
 		
 		try {
 			callbackUrl = callbackUrl.replace("twitterapp", "http");
-			
+
 			URL url = new URL(callbackUrl);
 			String query = url.getQuery();
 		
@@ -214,29 +161,7 @@ public class TwitterActivity {
 	
 	
 	private void showLoginDialog(String url) {
-
-		final TwitterDialogListener listener = new TwitterDialogListener() {
-			
-			String redirectUrl;
-			
-			@Override
-			public void setRedirectURL(String url) {
-				this.redirectUrl = url;
-			}
-
-			@Override
-			public void onComplete() {
-				processToken(this.redirectUrl);
-			}
-			
-			@Override
-			public void onError(String value) {
-				mListener.onError("Failed opening authorization page");
-			}
-
-		};
-		
-		new TwitterDialog(context, url, listener).show();
+		new TwitterDialog(context, url, mListener).show();
 	}
 	
 	
@@ -263,8 +188,95 @@ public class TwitterActivity {
 
 	
 	public interface TwitterDialogListener {
-		public void onComplete();			
+		public void onComplete();
 		void setRedirectURL(String url);
 		public void onError(String value);
+	}
+	
+	
+	private class TwitterAuthorizeTask extends AsyncTask<Uri, Void, Void> {
+		
+		protected void onPreExecute() {
+			mProgressDialog.setMessage("Opening Twitter...");
+			mProgressDialog.show();		
+		}
+		
+		protected void onPostExecute(Void result) {
+			mProgressDialog.dismiss();
+		}
+		
+		@Override
+		protected Void doInBackground(Uri... params) {
+
+            try {
+        				
+				Log.i(TAG, "Getting access token");
+				
+				
+				String authUrl = "";
+				int what = 1;
+				
+				try {
+					authUrl = mHttpOauthprovider.retrieveRequestToken(mHttpOauthConsumer, TWITTER_TOKEN_URL);	
+					what = 0;
+					Log.d(TAG, "Request token url " + authUrl);
+				} 
+				catch (Exception e) {
+					Log.d(TAG, "Failed to get request token");
+					e.printStackTrace();
+				}
+				
+				mHandler.sendMessage(mHandler.obtainMessage(what, 1, 0, authUrl));				
+				
+           }
+           catch (Exception e) {
+        	   e.printStackTrace();
+           }
+            
+            return null;
+		}		
+	}
+	
+	
+	private class TwitterProcessTokenTask extends AsyncTask<Uri, Void, Void> {
+		
+		protected void onPreExecute() {
+			mProgressDialog.setMessage("Saving settings...");
+			mProgressDialog.show();		
+		}
+		
+		protected void onPostExecute(Void result) {
+			mProgressDialog.dismiss();
+		}
+		
+		@Override
+		protected Void doInBackground(Uri... params) {
+
+			try {
+				final String verifier = getVerifier(tokenedUrl);
+	
+				int what = 1;
+				
+				try {
+					mHttpOauthprovider.retrieveAccessToken(mHttpOauthConsumer, verifier);
+					mAccessToken = new AccessToken(mHttpOauthConsumer.getToken(), mHttpOauthConsumer.getTokenSecret());
+					configureToken();
+					User user = mTwitter.verifyCredentials();
+			        mSession.storeAccessToken(mAccessToken, user.getName());			        
+			        what = 0;
+				} 
+				catch (Exception e){
+					Log.d(TAG, "Error getting access token");	
+					e.printStackTrace();
+				}
+				
+				mHandler.sendMessage(mHandler.obtainMessage(what, 2, 0));
+			}
+			catch (Exception e) {
+        	   e.printStackTrace();
+			}
+		
+			return null;
+		}		
 	}
 }

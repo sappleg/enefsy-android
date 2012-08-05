@@ -195,7 +195,7 @@ public class FoursquareActivity extends Activity {
 	private class FoursquareGetAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgress.setMessage("Getting access token ...");
+			mProgress.setMessage("Opening Foursquare...");
 			mProgress.show();		
 		}
 		

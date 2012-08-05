@@ -21,10 +21,6 @@ public class TwitterSession {
 	private static final String TWITTER_USER_NAME = "user_name";
 	private static final String SHARED = "Twitter_Preferences";
 	
-	private static final String TWITTER_USERNAME = "";
-	private static final String TWITTER_ACCESS_TOKEN = "";
-
-	
 	public TwitterSession(Context context) {
 		sharedPref = context.getSharedPreferences(SHARED, Context.MODE_PRIVATE);	
 		editor = sharedPref.edit();
@@ -47,12 +43,8 @@ public class TwitterSession {
 	}
 	
 	
-	public String getUsername() {
-		return sharedPref.getString(TWITTER_USER_NAME, "");
-	}
-
-	
 	public AccessToken getAccessToken() {
+
 		String token = sharedPref.getString(TWITTER_AUTH_KEY, null);
 		String tokenSecret = sharedPref.getString(TWITTER_AUTH_SECRET_KEY, null);
 		

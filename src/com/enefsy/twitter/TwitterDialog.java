@@ -14,8 +14,6 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.content.Context;

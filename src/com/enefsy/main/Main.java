@@ -21,12 +21,9 @@ import org.json.JSONObject;
 /* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -93,8 +90,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
 	private TwitterActivity twitterActivity;
-	private static final String twitter_consumer_key = "7yqQQggvKFcb8U3CYmiOQ";
-	private static final String twitter_secret_key = "61MYne9XJphKQefGnZTWIBvLmZiT8AMV948DkjZYY";
 
 	
     @Override
@@ -261,37 +256,19 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         /* The user clicks the Twitter button */
         else if (v == twitter_button) {
 
-        	twitterActivity	= new TwitterActivity(this, twitter_consumer_key,twitter_secret_key);	
-        	twitterActivity.setListener(twitterLoginDialogListener);
+        	/* Create a new twitter activity */
+        	twitterActivity	= new TwitterActivity(this);
+//        	twitterActivity.setListener(twitterLoginDialogListener);
 
     		if (!twitterActivity.hasAccessToken()) {    			
     			twitterActivity.authorize();
-//    			twitterActivity.processToken();
     		}
+
     		else {
     			twitterActivity.configureToken();
-    			try {
-					twitterActivity.updateStatus("I'm at @Tullys_Shops -- via @enefsy #PleasantonCATullys");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				twitterActivity.updateStatus("I'm at @Tullys_Shops -- via @enefsy #PleasantonCATullys");
     			Toast.makeText(this, "You have already logged into Twitter", Toast.LENGTH_LONG).show();
-    		}
-        	
-//            String message = "Your message to post";
-//            try {
-//                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//                sharingIntent.setClassName("com.twitter.android","com.twitter.android.PostActivity");
-//                sharingIntent.putExtra(Intent.EXTRA_TEXT, message);
-//                startActivity(sharingIntent);
-//            } catch (Exception e) {
-//                Intent i = new Intent();
-//                i.putExtra(Intent.EXTRA_TEXT, message);
-//                i.setAction(Intent.ACTION_VIEW);
-//                i.setData(Uri.parse("https://mobile.twitter.com/compose/tweet"));
-//                startActivity(i);
-//            }
+    		}        	
         }
         
         
@@ -439,26 +416,26 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     }
     
     
-	private final TwitterDialogListener twitterLoginDialogListener = new TwitterDialogListener() {
-		
-		String redirectUrl;
-
-		@Override
-		public void onComplete() {
-			String username = twitterActivity.getUsername();
-			username = (username.equals("")) ? "No Name" : username;
-			Toast.makeText(Main.this, "Connected to Twitter as " + username, Toast.LENGTH_LONG).show();
-//			twitterActivity.processToken();
-		}
-		
-		@Override
-		public void onError(String value) {
-			Toast.makeText(Main.this, "Twitter connection failed", Toast.LENGTH_LONG).show();
-		}
-		@Override
-		public void setRedirectURL(String url) {
-			this.redirectUrl = url;
-		}
-
-	};
+//	private final TwitterDialogListener twitterLoginDialogListener = new TwitterDialogListener() {
+//		
+//		String redirectUrl;
+//
+//		@Override
+//		public void onComplete() {
+//			String username = twitterActivity.getUsername();
+//			username = (username.equals("")) ? "No Name" : username;
+//			Toast.makeText(Main.this, "Connected to Twitter as " + username, Toast.LENGTH_LONG).show();
+////			twitterActivity.processToken();
+//		}
+//		
+//		@Override
+//		public void onError(String value) {
+//			Toast.makeText(Main.this, "Twitter connection failed", Toast.LENGTH_LONG).show();
+//		}
+//		@Override
+//		public void setRedirectURL(String url) {
+//			this.redirectUrl = url;
+//		}
+//
+//	};
 }
