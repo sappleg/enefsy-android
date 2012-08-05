@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private ImageButton facebook_button;
 	private ImageButton twitter_button;
 	private ImageButton foursquare_button;
+	
+	/* Button to invoke QR code scan */
+	private Button qr_button;
 
 	/* Creates Facebook Objects with the Enefsy Facebook App ID */
 	private Facebook facebookClient;
@@ -75,9 +79,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         venueData.put("foursquareid", i.getStringExtra("foursquareid"));
         venueData.put("googleid", i.getStringExtra("googleid"));
         venueData.put("yelpid", i.getStringExtra("yelpid"));
-        
-        /* Declare textview to show venue name */
-        mTextView = (TextView)findViewById(R.id.uid_view);
 
         /* Social Platform buttons */
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
@@ -86,8 +87,15 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
+        
+        /* QR code scanning button */
+        qr_button = (Button) findViewById(R.id.qr_button);
+        qr_button.setOnClickListener(this);
+        
+        /* Declare textview to show venue name */
+        mTextView = (TextView)findViewById(R.id.uid_view);
 
-        setTextView(getVenueDataMapValue("name"));
+        //setTextView(getVenueDataMapValue("name"));
     }
     
     @Override
@@ -97,9 +105,20 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     }
     
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        facebookClient.authorizeCallback(requestCode, resultCode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+//        facebookClient.authorizeCallback(requestCode, resultCode, data);
+    	if (requestCode == 0) {
+    		if (resultCode == RESULT_OK) {
+    			String contents = intent.getStringExtra("SCAN_RESULT");
+    	        String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+                // Handle successful scan
+    	        setTextView(contents);
+    		} else if (resultCode == RESULT_CANCELED) {
+    			// Handle cancel
+    			setTextView("Failed scan");
+    		}
+    	}
     }
     
     @Override
@@ -276,6 +295,16 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		else
         			Toast.makeText(this, "Unable to connect to Foursquare. Please check your network settings.", Toast.LENGTH_LONG).show();
         	}
+        }
+        
+        /**********************************************************************
+         * 								QR Scanner
+         *********************************************************************/
+        /* If the user clicks on the QR Scanner button */
+        else if (v == qr_button) {
+        	Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        	intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+        	startActivityForResult(intent, 0);
         }
     }
     
