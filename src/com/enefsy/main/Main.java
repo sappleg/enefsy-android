@@ -47,9 +47,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	private FoursquareActivity foursquareActivity;
 	private TwitterActivity twitterActivity;
 	
-	/* Database querying object */
-	private DatabaseActivity databaseActivity;
-	
 	/* TextView to hold name of venue */
 	private TextView mTextView;
 	
@@ -269,7 +266,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		if (isNetworkConnected()) {
 	        		foursquareActivity.initializeApi();
 	        		try {
-	        			foursquareActivity.checkIn(databaseActivity.getVenueDataMapValue("foursquareid")); 
+	        			foursquareActivity.checkIn(getVenueDataMapValue("foursquareid")); 
 	        		} catch(Exception e) {
 	        			e.printStackTrace();
 	        		}
