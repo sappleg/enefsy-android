@@ -78,9 +78,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         venueData.put("foursquareid", i.getStringExtra("foursquareid"));
         venueData.put("googleid", i.getStringExtra("googleid"));
         venueData.put("yelpid", i.getStringExtra("yelpid"));
-        
-        /* Declare textview to show venue name */
-        mTextView = (TextView)findViewById(R.id.uid_view);
 
         /* Social Platform buttons */
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
@@ -89,6 +86,13 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         twitter_button.setOnClickListener(this);
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
+        
+        /* QR code scanning button */
+        qr_button = (Button) findViewById(R.id.qr_button);
+        qr_button.setOnClickListener(this);
+        
+        /* Declare textview to show venue name */
+        mTextView = (TextView)findViewById(R.id.uid_view);
 
         setTextView(getVenueDataMapValue("name"));
     }
@@ -265,6 +269,14 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		else
         			Toast.makeText(this, "Unable to connect to Foursquare. Please check your network settings.", Toast.LENGTH_LONG).show();
         	}
+        }
+        
+        /**********************************************************************
+         * 								QR Scanner
+         *********************************************************************/
+        /* If the user clicks on the QR Scanner button */
+        else if (v == qr_button) {
+        	
         }
     }
     
