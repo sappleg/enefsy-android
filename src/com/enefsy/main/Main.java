@@ -266,7 +266,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		if (isNetworkConnected()) {
 	        		foursquareActivity.initializeApi();
 	        		try {
-	        			foursquareActivity.checkIn(databaseActivity.getVenueDataMapValue("foursquareid")); 
+	        			foursquareActivity.checkIn(getVenueDataMapValue("foursquareid")); 
 	        		} catch(Exception e) {
 	        			e.printStackTrace();
 	        		}
