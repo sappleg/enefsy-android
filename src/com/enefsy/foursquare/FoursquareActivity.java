@@ -235,7 +235,8 @@ public class FoursquareActivity extends Activity {
 					
 					ex.printStackTrace();
 				}
-				        				
+				
+				/* Need to handle leaks eventually */
        			mHandler.sendMessage(mHandler.obtainMessage(what, 1, 0));	
        			
            } catch (Exception e) {
@@ -295,7 +296,7 @@ public class FoursquareActivity extends Activity {
 	}
 	
 	
-    private class FoursquareCheckinTask extends AsyncTask<Uri, Void, Void> {
+    private class FoursquareCheckinTask extends AsyncTask<Uri, Void, String> {
 
 		private String apiStatusMsg;
 		private FoursquareApi foursquareApi;
@@ -312,12 +313,12 @@ public class FoursquareActivity extends Activity {
     		mProgress.show();			
 		}
 		
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(String s) {
 			mProgress.dismiss();
 	    }
 
 		@Override
-		protected Void doInBackground(Uri...params) {
+		protected String doInBackground(Uri...params) {
 			try {
 				
         		Result<Checkin> result = this.foursquareApi.checkinsAdd(this.venueId, 
@@ -331,7 +332,7 @@ public class FoursquareActivity extends Activity {
 			} catch (FoursquareApiException e) {
 				e.printStackTrace();
 			}
-            return null;
+            return apiStatusMsg;
 		}
     }
 }
