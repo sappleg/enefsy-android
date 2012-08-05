@@ -42,6 +42,7 @@ public class TwitterActivity {
 	private Context context;
 	private boolean mInit = true;
 	private String tokenedUrl;
+	private String status;
 
 	private static final String TWITTER_CONSUMER_KEY = "7yqQQggvKFcb8U3CYmiOQ";
 	private static final String TWITTER_SECRET_KEY = "61MYne9XJphKQefGnZTWIBvLmZiT8AMV948DkjZYY";
@@ -51,7 +52,7 @@ public class TwitterActivity {
 	public static final String TWITTER_CALLBACK_URL = "http://www.enefsy.com";
 
 	private static final String TAG = "TwitterActivity";
-
+	
 	
 	public TwitterActivity(Context context) {
 
@@ -114,7 +115,9 @@ public class TwitterActivity {
 	
 	public void updateStatus(String status){
 		try {
-			mTwitter.updateStatus(status);
+			this.status = status;
+			
+//			mTwitter.updateStatus(status);
 			new TwitterUpdateStatusTask().execute();
 		} 
 		catch (Exception e) {
@@ -296,9 +299,9 @@ public class TwitterActivity {
 					while updating the user's status
 			*/
 			try {
-				Thread.sleep(3000);
+				mTwitter.updateStatus(status);
 			} 
-			catch (InterruptedException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 

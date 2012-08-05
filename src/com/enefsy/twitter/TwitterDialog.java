@@ -50,8 +50,8 @@ public class TwitterDialog extends Dialog {
     
     public TwitterDialog(Context context, String url, TwitterDialogListener listener) {
         super(context);
-        mUrl 		= url;
-        mListener 	= listener;
+        mUrl = url;
+        mListener = listener;
     }
 
     
@@ -125,11 +125,9 @@ public class TwitterDialog extends Dialog {
         	Log.d(TAG, "Redirecting URL " + url);
         	
         	if (url.startsWith(TwitterActivity.TWITTER_TOKEN_URL)) {
-
+            	mListener.setRedirectURL(url);
         		mListener.onComplete();
-        		
         		TwitterDialog.this.dismiss();
-        		
         		return true;
         	}  
         	else if (url.startsWith("authorize")) {
@@ -152,17 +150,11 @@ public class TwitterDialog extends Dialog {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d(TAG, "Loading URL: " + url);
-        	
-        	if (url.startsWith(TwitterActivity.TWITTER_TOKEN_URL)) {
-            	Log.d(TAG, "Redirecting URL " + url);
-            	mListener.setRedirectURL(url);
-        		mListener.onComplete();
-        		TwitterDialog.this.dismiss();        		
-            }
-        	else {	
+            
+            if (!shouldOverrideUrlLoading(view, url)) {            
 	            super.onPageStarted(view, url, favicon);
 	            mSpinner.show();
-        	}
+            }
         }
 
         
