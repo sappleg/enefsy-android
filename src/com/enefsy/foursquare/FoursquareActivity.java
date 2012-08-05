@@ -12,7 +12,9 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import com.enefsy.foursquare.FoursquareDialog;
 import com.enefsy.foursquare.FoursquareDialog.FsqDialogListener;
+
 import fi.foyt.foursquare.api.FoursquareApi;
 import fi.foyt.foursquare.api.FoursquareApiException;
 import fi.foyt.foursquare.api.Result;
@@ -29,11 +31,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 
-/**
- * 
- * @author Lorensius W. L. T <lorenz@londatiga.net>
- *
- */
+
 public class FoursquareActivity extends Activity {
 
 	private FoursquareApi mFoursquareApi;
@@ -209,9 +207,6 @@ public class FoursquareActivity extends Activity {
 		protected Void doInBackground(Uri... params) {
 
             try {
-
-            	mProgress.setMessage("Getting access token ...");
-        		mProgress.show();
         				
 				Log.i(TAG, "Getting access token");
 				

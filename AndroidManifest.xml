@@ -37,7 +37,11 @@
        <activity
             android:name=".FoursquareActivity" >
        </activity>        
-        
+
+       <activity
+            android:name=".TwitterActivity" >
+       </activity>        
+       
     </application>
 
 </manifest>
