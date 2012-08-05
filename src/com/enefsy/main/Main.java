@@ -1,5 +1,8 @@
 package com.enefsy.main;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -46,15 +49,31 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	
 	/* TextView to hold name of venue */
 	private TextView mTextView;
+	
+	/* Hashmap to contain all venue specific data.
+	   The default values are stored for Dublin, CA Starbucks */
+	private Map<String, String> venueData;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        /* Declare Hashmap to contain venue data */
+        venueData = new HashMap<String, String>();
+        
         /* Get data from database activity */
         Intent i = getIntent();
-        String name = i.getStringExtra("name");
+        venueData.put("uid", i.getStringExtra("uid"));
+        venueData.put("name", i.getStringExtra("name"));
+        venueData.put("address", i.getStringExtra("address"));
+        venueData.put("latitude", i.getStringExtra("latitude"));
+        venueData.put("longitude", i.getStringExtra("longitude"));
+        venueData.put("facebookid", i.getStringExtra("facebookid"));
+        venueData.put("twitterhandle", i.getStringExtra("twitterhandle"));
+        venueData.put("foursquareid", i.getStringExtra("foursquareid"));
+        venueData.put("googleid", i.getStringExtra("googleid"));
+        venueData.put("yelpid", i.getStringExtra("yelpid"));
         
         /* Declare textview to show venue name */
         mTextView = (TextView)findViewById(R.id.uid_view);
@@ -67,7 +86,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         foursquare_button = (ImageButton) findViewById(R.id.foursquare_button);
         foursquare_button.setOnClickListener(this);
 
-        setTextView(name);
+        setTextView(getVenueDataMapValue("name"));
     }
     
     @Override
@@ -208,13 +227,11 @@ public class Main extends Activity implements DialogListener, OnClickListener {
             }
         }
         
-        
         /**********************************************************************
          * 								FOURSQUARE
          *********************************************************************/
         /* If the user clicks on the foursquare button */
         else if (v == foursquare_button) {
-
         	/* Create a new foursquare activity */
         	foursquareActivity = new FoursquareActivity(this);
         	
@@ -222,7 +239,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         	 * account, show a dialog requesting permissions
         	 */
         	if (!foursquareActivity.hasAccessToken()) {
-        		
         		/* If the phone is connected to the internet, try to authorize the user */
         		if (isNetworkConnected())
         			foursquareActivity.authorize();
@@ -230,11 +246,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         		/* If no internet connection is available, alert user */
         		else
         			Toast.makeText(this, "Unable to connect to Foursquare. Please check your network settings.", Toast.LENGTH_LONG).show();
-        	}
-        	
-        	/* Otherwise the user has already granted us permissions so check them in */
-        	else {
-
+        	} else { /* Otherwise the user has already granted us permissions so check them in */
         		/* If the phone is connected to the internet, try to authorize the user */
         		if (isNetworkConnected()) {
 	        		foursquareActivity.initializeApi();
@@ -252,34 +264,32 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         }
     }
     
-    
 	@Override
 	public void onComplete(Bundle values) {
 		// TODO Auto-generated method stub
 	}
-
 	
 	@Override
 	public void onFacebookError(FacebookError e) {
 		// TODO Auto-generated method stub
 	}
 	
-	
 	/* This returns a boolean indicating whether or not the phone has an active network connection */
 	public boolean isNetworkConnected() {
-
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 	   
 		if (networkInfo != null && networkInfo.isConnected())
 			return true;
 		else
 			return false;
-
 	}
 	
 	public void setTextView(String s) {
 		mTextView.setText(s);
+	}
+	
+	public String getVenueDataMapValue(String key) {
+		return venueData.get(key);
 	}
 }

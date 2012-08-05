@@ -40,9 +40,6 @@ public class DatabaseActivity extends Activity {
 	/* Object representing the AsyncTask itself */
 	private GetVenueDataTask mGetVenueDataTask;
 	
-	/* String for UID */
-	private String uid;
-	
     /* NFC Adapter to pull UID message from tag */
 	private NfcAdapter mNfcAdapter;
 	
@@ -62,8 +59,8 @@ public class DatabaseActivity extends Activity {
 //            finish();
 //            return;
             
-            /* Construct Database Activity */
-            uid = "11111111111111111111";
+            /* Add default UID to venue data map */
+            venueDataMap.put("uid", "11111111111111111111");
         } else {
 	        /* See if application was started from an NFC tag */
 	        Intent intent = getIntent();
@@ -71,14 +68,14 @@ public class DatabaseActivity extends Activity {
 	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 	            NdefMessage msg = (NdefMessage) rawMsgs[0];
 	            NdefRecord uidRecord = msg.getRecords()[0];
-	            uid = new String(uidRecord.getPayload());
+	            venueDataMap.put("uid", new String(uidRecord.getPayload()));
 	        } else {
-	            uid = "11111111111111111111";
+	            /* Add default UID to venue data map */
+	            venueDataMap.put("uid", "11111111111111111111");
 	        }
         }
 
         /* Pre-populate Map containing venue specific data */
-        venueDataMap.put("id", uid);
         venueDataMap.put("name", "");
         venueDataMap.put("address", "");
         venueDataMap.put("latitude", "");
@@ -108,7 +105,16 @@ public class DatabaseActivity extends Activity {
 			}
 			
 			Intent intent = new Intent(getApplicationContext(), Main.class);
+			intent.putExtra("uid", getVenueDataMapValue("uid"));
 			intent.putExtra("name", getVenueDataMapValue("name"));
+			intent.putExtra("address", getVenueDataMapValue("address"));
+			intent.putExtra("latitude", getVenueDataMapValue("latitude"));
+			intent.putExtra("longitude", getVenueDataMapValue("longitude"));
+			intent.putExtra("facebookid", getVenueDataMapValue("facebookid"));
+			intent.putExtra("twitterhandle", getVenueDataMapValue("twitterhandle"));
+			intent.putExtra("foursquareid", getVenueDataMapValue("foursquareid"));
+			intent.putExtra("googleid", getVenueDataMapValue("googleid"));
+			intent.putExtra("yelpid", getVenueDataMapValue("yelpid"));
 			startActivity(intent);
 		}
 		
@@ -117,7 +123,9 @@ public class DatabaseActivity extends Activity {
 
     		/* UID data to send */
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    		nameValuePairs.add(new BasicNameValuePair("id",venueDataMap.get("id")));
+    		nameValuePairs.add(new BasicNameValuePair("id",venueDataMap.get("uid")));
+    		nameValuePairs.add(new BasicNameValuePair("username","enefsy"));
+    		nameValuePairs.add(new BasicNameValuePair("password","GTgolfer1990"));
     		String venueData = "";
     		InputStream is = null;
 		    	
@@ -178,7 +186,6 @@ public class DatabaseActivity extends Activity {
 	}
 	
 	public String getVenueDataMapValue(String key) {
-		String value = venueDataMap.get(key);
-		return value;
+		return venueDataMap.get(key);
 	}
 }
