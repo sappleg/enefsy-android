@@ -104,9 +104,18 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     }
     
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        facebookClient.authorizeCallback(requestCode, resultCode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+//        facebookClient.authorizeCallback(requestCode, resultCode, data);
+    	if (requestCode == 0) {
+    		if (resultCode == RESULT_OK) {
+    			String contents = intent.getStringExtra("SCAN_RESULT");
+    	        String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+                // Handle successful scan
+    		} else if (resultCode == RESULT_CANCELED) {
+    			// Handle cancel
+    		}
+    	}
     }
     
     @Override
@@ -276,7 +285,9 @@ public class Main extends Activity implements DialogListener, OnClickListener {
          *********************************************************************/
         /* If the user clicks on the QR Scanner button */
         else if (v == qr_button) {
-        	
+        	Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        	intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+        	startActivityForResult(intent, 0);
         }
     }
     
