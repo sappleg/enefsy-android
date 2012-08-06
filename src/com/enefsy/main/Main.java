@@ -58,7 +58,6 @@ public class Main extends Activity implements DialogListener, OnClickListener {
 	   The default values are stored for Dublin, CA Starbucks */
 	private Map<String, String> venueData;
 
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
