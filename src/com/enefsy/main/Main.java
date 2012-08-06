@@ -118,7 +118,7 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     	        String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
     	        if (format.equals("QR_CODE")) {
     	        	// Handle successful scan
-    	        	Intent newIntent = new Intent(getApplicationContext(),DatabaseActivity.class);
+    	        	Intent newIntent = new Intent(getApplicationContext(),DatabaseActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     	        	newIntent.putExtra("uid", contents);
     	        	newIntent.putExtra("qr_read", true);
     	        	startActivity(newIntent);

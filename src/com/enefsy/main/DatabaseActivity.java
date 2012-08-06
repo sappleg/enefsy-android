@@ -79,7 +79,7 @@ public class DatabaseActivity extends Activity {
 	    	venueDataMap.put("uid", intent.getStringExtra("uid"));
 	        new GetVenueDataTask().execute();
 	    } else {
-	    	Intent newIntent = new Intent(getApplicationContext(), Main.class);
+	    	Intent newIntent = new Intent(getApplicationContext(), Main.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    	newIntent.putExtra("queried", false);
 			startActivity(newIntent);
 	    }
@@ -99,7 +99,7 @@ public class DatabaseActivity extends Activity {
 				e.printStackTrace();
 			}
 			
-			Intent intent = new Intent(getApplicationContext(), Main.class);
+			Intent intent = new Intent(getApplicationContext(), Main.class);//.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			intent.putExtra("queried", true);
 			intent.putExtra("uid", getVenueDataMapValue("uid"));
 			intent.putExtra("name", getVenueDataMapValue("name"));
@@ -112,6 +112,7 @@ public class DatabaseActivity extends Activity {
 			intent.putExtra("googleid", getVenueDataMapValue("googleid"));
 			intent.putExtra("yelpid", getVenueDataMapValue("yelpid"));
 			startActivity(intent);
+			finish();
 		}
 		
 		@Override
