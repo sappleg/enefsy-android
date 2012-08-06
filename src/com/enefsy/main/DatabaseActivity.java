@@ -29,16 +29,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import android.widget.Toast;
 
 @TargetApi(10)
 public class DatabaseActivity extends Activity {
 	/* Hashmap to contain all venue specific data.
 	   The default values are stored for Dublin, CA Starbucks */
 	private Map<String, String> venueDataMap;
-	
-	/* Object representing the AsyncTask itself */
-	private GetVenueDataTask mGetVenueDataTask;
 	
     /* NFC Adapter to pull UID message from tag */
 	private NfcAdapter mNfcAdapter;
@@ -54,28 +50,8 @@ public class DatabaseActivity extends Activity {
         /* Declare a Hashmap to hold venue specific data */
 		venueDataMap = new HashMap<String, String>();
 		
-        if (mNfcAdapter == null) {
-            Toast.makeText(this, "NFC is not available, using Meadowbrook data", Toast.LENGTH_LONG).show();
-//            finish();
-//            return;
-            
-            /* Add default UID to venue data map */
-            venueDataMap.put("uid", "11111111111111111112");
-        } else {
-	        /* See if application was started from an NFC tag */
-	        Intent intent = getIntent();
-	        if(intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main")) {
-	        	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-	            NdefMessage msg = (NdefMessage) rawMsgs[0];
-	            NdefRecord uidRecord = msg.getRecords()[0];
-	            venueDataMap.put("uid", new String(uidRecord.getPayload()));
-	        } else {
-	            /* Add default UID to venue data map */
-	            venueDataMap.put("uid", "11111111111111111112");
-	        }
-        }
-
         /* Pre-populate Map containing venue specific data */
+		venueDataMap.put("uid", "");
         venueDataMap.put("name", "");
         venueDataMap.put("address", "");
         venueDataMap.put("latitude", "");
@@ -85,9 +61,28 @@ public class DatabaseActivity extends Activity {
         venueDataMap.put("foursquareid", "");
         venueDataMap.put("googleid", "");
         venueDataMap.put("yelpid", "");
-
-        mGetVenueDataTask = new GetVenueDataTask();
-        mGetVenueDataTask.execute();
+	    
+        /* Get current intent object */
+		Intent intent = getIntent();
+		
+		/* Create boolean object to represent a QR code read */
+		boolean qr_read = intent.getBooleanExtra("qr_read", false);
+	    
+		/* See if application was started from an NFC tag */
+	    if (intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main") && mNfcAdapter != null && qr_read == false) {
+	     	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+	        NdefMessage msg = (NdefMessage) rawMsgs[0];
+	        NdefRecord uidRecord = msg.getRecords()[0];
+	        venueDataMap.put("uid", new String(uidRecord.getPayload()));
+	        new GetVenueDataTask().execute();
+	    } else if (qr_read == true) {
+	    	venueDataMap.put("uid", intent.getStringExtra("uid"));
+	        new GetVenueDataTask().execute();
+	    } else {
+	    	Intent newIntent = new Intent(getApplicationContext(), Main.class);
+	    	newIntent.putExtra("queried", false);
+			startActivity(newIntent);
+	    }
 	}
 	
 	/* Private inner class to handle the activity of querying the enefsy database */
@@ -99,12 +94,13 @@ public class DatabaseActivity extends Activity {
 		protected void onPostExecute(Void unused) {
 			
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
 			Intent intent = new Intent(getApplicationContext(), Main.class);
+			intent.putExtra("queried", true);
 			intent.putExtra("uid", getVenueDataMapValue("uid"));
 			intent.putExtra("name", getVenueDataMapValue("name"));
 			intent.putExtra("address", getVenueDataMapValue("address"));

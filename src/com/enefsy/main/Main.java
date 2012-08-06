@@ -63,22 +63,12 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        /* Declare textview to show venue name */
+        mTextView = (TextView)findViewById(R.id.uid_view);
+        
         /* Declare Hashmap to contain venue data */
         venueData = new HashMap<String, String>();
         
-        /* Get data from database activity */
-        Intent i = getIntent();
-        venueData.put("uid", i.getStringExtra("uid"));
-        venueData.put("name", i.getStringExtra("name"));
-        venueData.put("address", i.getStringExtra("address"));
-        venueData.put("latitude", i.getStringExtra("latitude"));
-        venueData.put("longitude", i.getStringExtra("longitude"));
-        venueData.put("facebookid", i.getStringExtra("facebookid"));
-        venueData.put("twitterhandle", i.getStringExtra("twitterhandle"));
-        venueData.put("foursquareid", i.getStringExtra("foursquareid"));
-        venueData.put("googleid", i.getStringExtra("googleid"));
-        venueData.put("yelpid", i.getStringExtra("yelpid"));
-
         /* Social Platform buttons */
         facebook_button = (ImageButton) findViewById(R.id.facebook_button);
         facebook_button.setOnClickListener(this);
@@ -91,10 +81,25 @@ public class Main extends Activity implements DialogListener, OnClickListener {
         qr_button = (Button) findViewById(R.id.qr_button);
         qr_button.setOnClickListener(this);
         
-        /* Declare textview to show venue name */
-        mTextView = (TextView)findViewById(R.id.uid_view);
-
-        //setTextView(getVenueDataMapValue("name"));
+        /* Get data from database activity */
+        Intent i = getIntent();
+        boolean queried = i.getBooleanExtra("queried", false);
+        if (queried) {
+	        venueData.put("uid", i.getStringExtra("uid"));
+	        venueData.put("name", i.getStringExtra("name"));
+	        venueData.put("address", i.getStringExtra("address"));
+	        venueData.put("latitude", i.getStringExtra("latitude"));
+	        venueData.put("longitude", i.getStringExtra("longitude"));
+	        venueData.put("facebookid", i.getStringExtra("facebookid"));
+	        venueData.put("twitterhandle", i.getStringExtra("twitterhandle"));
+	        venueData.put("foursquareid", i.getStringExtra("foursquareid"));
+	        venueData.put("googleid", i.getStringExtra("googleid"));
+	        venueData.put("yelpid", i.getStringExtra("yelpid"));
+	        
+	        setTextView(getVenueDataMapValue("name"));
+        } else {
+            setTextView("Tap phone to NFC Tag\nOr scan QR code");
+        }
     }
     
     @Override
@@ -111,11 +116,18 @@ public class Main extends Activity implements DialogListener, OnClickListener {
     		if (resultCode == RESULT_OK) {
     			String contents = intent.getStringExtra("SCAN_RESULT");
     	        String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-                // Handle successful scan
-    	        setTextView(contents);
+    	        if (format.equals("QR_CODE")) {
+    	        	// Handle successful scan
+    	        	Intent newIntent = new Intent(getApplicationContext(),DatabaseActivity.class);
+    	        	newIntent.putExtra("uid", contents);
+    	        	newIntent.putExtra("qr_read", true);
+    	        	startActivity(newIntent);
+    	        } else {
+    	        	setTextView("Please scan Enefsy QR Code\nPress Scan QR Code button to retry");
+    	        }
     		} else if (resultCode == RESULT_CANCELED) {
     			// Handle cancel
-    			setTextView("Failed scan");
+    			setTextView("Failed scan\nPress Scan QR Code button to retry");
     		}
     	}
     }
