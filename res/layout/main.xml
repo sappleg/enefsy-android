@@ -46,18 +46,6 @@
                 android:background="?android:attr/selectableItemBackground" />
 
         </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
     </TableLayout>
     
     <TextView 
@@ -69,8 +57,9 @@
     
     <Button
         android:id="@+id/qr_button"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:contentDescription="@string/qr_button_desc"
         android:text="@string/qr_button" />
 
