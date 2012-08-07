@@ -94,7 +94,7 @@ public class DatabaseActivity extends Activity {
 		}
 		
 		protected void onPostExecute(Void unused) {
-			Intent intent = new Intent(getApplicationContext(), Main.class);
+			Intent intent = new Intent(getApplicationContext(), Main.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			intent.putExtra("queried", true);
 			intent.putExtra("uid", getVenueDataMapValue("uid"));
 			intent.putExtra("name", getVenueDataMapValue("name"));
