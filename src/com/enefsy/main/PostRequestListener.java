@@ -4,9 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import com.enefsy.facebook.FacebookError;
 
-import com.facebook.android.FacebookError;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
+
+import com.enefsy.facebook.AsyncFacebookRunner.RequestListener;
 
 public class PostRequestListener implements RequestListener {
 

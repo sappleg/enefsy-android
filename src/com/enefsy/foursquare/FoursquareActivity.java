@@ -60,14 +60,14 @@ public class FoursquareActivity extends Activity {
 	
 	public FoursquareActivity(Context context) {
 				
-		mSession		= new FoursquareSession(context);
+		mSession = new FoursquareSession(context);
 				
-		mAccessToken	= mSession.getAccessToken();
+		mAccessToken = mSession.getAccessToken();
 		
-		mTokenUrl		= TOKEN_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&client_secret=" + FOURSQUARE_CLIENT_SECRET
+		mTokenUrl = TOKEN_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&client_secret=" + FOURSQUARE_CLIENT_SECRET
 						+ "&redirect_uri=" + CALLBACK_URL;
 		
-		String url		= AUTH_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&redirect_uri=" + CALLBACK_URL;
+		String url = AUTH_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&redirect_uri=" + CALLBACK_URL;
 
 		FsqDialogListener listener = new FsqDialogListener() {
 			@Override
@@ -82,9 +82,9 @@ public class FoursquareActivity extends Activity {
 			}
 		};
 		
-		mDialog			= new FoursquareDialog(context, url, listener);
-
-		mProgress		= new ProgressDialog(context);
+		mDialog	= new FoursquareDialog(context, url, listener);
+		
+		mProgress = new ProgressDialog(context);
 		mProgress.setCancelable(true);
 		
 	}
