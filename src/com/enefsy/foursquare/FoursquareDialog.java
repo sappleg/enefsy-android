@@ -90,7 +90,7 @@ public class FoursquareDialog extends Dialog {
 	        
 	        mTitle = new TextView(getContext());
 	        
-	        mTitle.setText("Foursquare");
+	        mTitle.setText("Facebook");
 	        mTitle.setTextColor(Color.WHITE);
 	        mTitle.setTypeface(Typeface.DEFAULT_BOLD);
 	        mTitle.setBackgroundColor(0xFF0cbadf);
