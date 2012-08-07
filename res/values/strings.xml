@@ -12,6 +12,6 @@
     <string name="qr_button_desc">QR Scanner button</string>
     <string name="qr_button">Scan QR Code</string>
     <string name="launch_desc">Launch screen</string>
-    <string name="launch_name">Connecting to Enefsy</string>
+    <string name="progress">Connecting to Enefsy&#8230;</string>
     
 </resources>

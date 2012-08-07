@@ -21,7 +21,6 @@ import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -40,18 +39,13 @@ public class DatabaseActivity extends Activity {
     /* NFC Adapter to pull UID message from tag */
 	private NfcAdapter mNfcAdapter;
 	
-	/* Progress Dialog used for DB query from QR Code */
-	private ProgressDialog mProgressDialog;
-	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.launch);
         
         /* Check for available NFC Adapter */
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        
-        /* Declaration of DB query Progress Dialog */
-        mProgressDialog = new ProgressDialog(this);
         
         /* Declare a Hashmap to hold venue specific data */
 		venueDataMap = new HashMap<String, String>();
@@ -76,16 +70,14 @@ public class DatabaseActivity extends Activity {
 	    
 		/* See if application was started from an NFC tag */
 	    if (intent.getType() != null && intent.getType().equals("application/vnd.enefsy.main") && mNfcAdapter != null && qr_read == false) {
-	        setContentView(R.layout.launch);
 	     	Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 	        NdefMessage msg = (NdefMessage) rawMsgs[0];
 	        NdefRecord uidRecord = msg.getRecords()[0];
 	        venueDataMap.put("uid", new String(uidRecord.getPayload()));
-	        new GetVenueDataTaskNFC().execute();
+	        new GetVenueDataTask().execute();
 	    } else if (qr_read == true) {
-	        setContentView(R.layout.main);
 	    	venueDataMap.put("uid", intent.getStringExtra("uid"));
-	        new GetVenueDataTaskQR().execute();
+	        new GetVenueDataTask().execute();
 	    } else {
 	    	Intent newIntent = new Intent(getApplicationContext(), Main.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    	newIntent.putExtra("queried", false);
@@ -94,113 +86,15 @@ public class DatabaseActivity extends Activity {
 	}
 	
 	/* Private inner class to handle the activity of querying the enefsy database */
-	private class GetVenueDataTaskNFC extends AsyncTask<Void, Void, Void> {
-		
-		/* Method to execute prior to AsyncTask execution */
-		protected void onPreExecute() {	}
-		
-		protected void onPostExecute(Void unused) {
-			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			Intent intent = new Intent(getApplicationContext(), Main.class);//.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			intent.putExtra("queried", true);
-			intent.putExtra("uid", getVenueDataMapValue("uid"));
-			intent.putExtra("name", getVenueDataMapValue("name"));
-			intent.putExtra("address", getVenueDataMapValue("address"));
-			intent.putExtra("latitude", getVenueDataMapValue("latitude"));
-			intent.putExtra("longitude", getVenueDataMapValue("longitude"));
-			intent.putExtra("facebookid", getVenueDataMapValue("facebookid"));
-			intent.putExtra("twitterhandle", getVenueDataMapValue("twitterhandle"));
-			intent.putExtra("foursquareid", getVenueDataMapValue("foursquareid"));
-			intent.putExtra("googleid", getVenueDataMapValue("googleid"));
-			intent.putExtra("yelpid", getVenueDataMapValue("yelpid"));
-			startActivity(intent);
-			finish();
-		}
-		
-		@Override
-		protected Void doInBackground(Void... unused) {
-
-    		/* UID data to send */
-    		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    		nameValuePairs.add(new BasicNameValuePair("id",venueDataMap.get("uid")));
-    		nameValuePairs.add(new BasicNameValuePair("username","enefsy"));
-    		nameValuePairs.add(new BasicNameValuePair("password","GTgolfer1990"));
-    		String venueData = "";
-    		InputStream is = null;
-		    	
-			/* HTTP post */
-			try{
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost("http://enefsy.com/getVenues.php");
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				HttpResponse response = httpclient.execute(httppost);
-				HttpEntity entity = response.getEntity();
-				is = entity.getContent();
-			}catch(Exception e){
-				Log.e("log_tag", "Error in http connection " + e.toString());
-			}
-			
-			/* convert response to string */
-			try{
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-    	               sb.append(line + "\n");
-				}
-				is.close();
-    	 
-				venueData = sb.toString();
-			}catch(Exception e){
-				Log.e("log_tag", "Error converting result " + e.toString());
-			}
-    	 
-			/* parse JSON data */
-			try{
-				JSONArray jArray = new JSONArray(venueData);
-				setVenueData(jArray);
-			} catch(JSONException e){
-				Log.e("log_tag", "Error parsing data " + e.toString());
-			}
-			
-			return null;
-		}
-		
-		protected void setVenueData(JSONArray jArray) {
-			try {
-				JSONObject json_data = jArray.getJSONObject(0);
-				venueDataMap.put("name", json_data.getString("name"));
-				venueDataMap.put("address", json_data.getString("address"));
-				venueDataMap.put("latitude", json_data.getString("latitude"));
-				venueDataMap.put("longitude", json_data.getString("longitude"));
-				venueDataMap.put("facebookid", json_data.getString("facebookid"));
-				venueDataMap.put("twitterhandle", json_data.getString("twitterhandle"));
-				venueDataMap.put("foursquareid", json_data.getString("foursquareid"));
-				venueDataMap.put("googleid", json_data.getString("googleid"));
-				venueDataMap.put("yelpid", json_data.getString("yelpid"));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/* Private inner class to handle the activity of querying the enefsy database */
-	private class GetVenueDataTaskQR extends AsyncTask<Void, Void, Void> {
+	private class GetVenueDataTask extends AsyncTask<Void, Void, Void> {
 		
 		/* Method to execute prior to AsyncTask execution */
 		protected void onPreExecute() {
-			mProgressDialog.setMessage("Connecting to Enefsy...");
-			mProgressDialog.show();
+			
 		}
 		
 		protected void onPostExecute(Void unused) {
-			Intent intent = new Intent(getApplicationContext(), Main.class);//.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			Intent intent = new Intent(getApplicationContext(), Main.class);
 			intent.putExtra("queried", true);
 			intent.putExtra("uid", getVenueDataMapValue("uid"));
 			intent.putExtra("name", getVenueDataMapValue("name"));
@@ -213,8 +107,6 @@ public class DatabaseActivity extends Activity {
 			intent.putExtra("googleid", getVenueDataMapValue("googleid"));
 			intent.putExtra("yelpid", getVenueDataMapValue("yelpid"));
 			startActivity(intent);
-			
-			mProgressDialog.dismiss();
 			
 			finish();
 		}
