@@ -250,7 +250,7 @@ public class AsyncFacebookRunner {
         new Thread() {
             @Override public void run() {
                 try {
-                    String resp = fb.request(graphPath, parameters, httpMethod);
+                	String resp = fb.request(graphPath, parameters, httpMethod);
                     listener.onComplete(resp, state);
                 } catch (FileNotFoundException e) {
                     listener.onFileNotFoundException(e, state);

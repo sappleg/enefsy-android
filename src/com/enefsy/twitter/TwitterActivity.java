@@ -194,7 +194,7 @@ public class TwitterActivity {
 	private class TwitterAuthorizeTask extends AsyncTask<Uri, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgressDialog.setMessage("Opening Twitter...");
+			mProgressDialog.setMessage("Loading...");
 			mProgressDialog.show();		
 		}
 		

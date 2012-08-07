@@ -45,12 +45,12 @@ public class FacebookDialog extends Dialog {
     static final String DISPLAY_STRING = "touch";
     static final String FB_ICON = "icon.png";
     
-	static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
-    static final float[] DIMENSIONS_PORTRAIT = {280, 420};
+	static final float[] DIMENSIONS_LANDSCAPE = {500, 300};
+    static final float[] DIMENSIONS_PORTRAIT = {300, 500};
     static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
                          						ViewGroup.LayoutParams.FILL_PARENT);
-    static final int MARGIN = 4;
-    static final int PADDING = 2;
+    static final int MARGIN = 3;
+    static final int PADDING = 3;
 
 
     private String mUrl;
@@ -77,22 +77,14 @@ public class FacebookDialog extends Dialog {
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mContent = new LinearLayout(getContext());
+        mContent.setOrientation(LinearLayout.VERTICAL);
 
         /* Create the 'x' image, but don't add to the mContent layout yet
          * at this point, we only need to know its drawable width and height 
          * to place the webview
          */
         createCrossImage();
-        
-        super.onCreate(savedInstanceState);
-
-        mSpinner = new ProgressDialog(getContext());        
-        mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mSpinner.setMessage("Loading...");
-
-        mContent = new LinearLayout(getContext());        
-        mContent.setOrientation(LinearLayout.VERTICAL);
-        
+                
         setUpTitle();
         setUpWebView();
         

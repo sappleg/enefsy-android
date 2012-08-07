@@ -20,10 +20,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import com.enefsy.main.PostRequestListener;
-
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +32,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -78,8 +79,9 @@ public class FacebookActivity extends Activity {
     private String[] mAuthPermissions;
     private int mAuthActivityCode;
     private DialogListener mAuthDialogListener;
-    private AsyncFacebookRunner mAsyncFacebookRunner;
     private Context mContext;
+    private ProgressDialog mProgressDialog;
+    
     
     
     /**
@@ -90,8 +92,9 @@ public class FacebookActivity extends Activity {
     	mContext = context;
 		mSession = new FacebookSession(context);
 		mAccessToken = mSession.getAccessToken();
-    	mAsyncFacebookRunner = new AsyncFacebookRunner(this);
-    	
+		mProgressDialog = new ProgressDialog(context);
+		mProgressDialog.setCancelable(true);
+
     	mAuthDialogListener = new DialogListener() {
     		@Override
             public void onComplete(Bundle values) {
@@ -125,12 +128,7 @@ public class FacebookActivity extends Activity {
 	
 	
 	public void checkin(String venueId) {
-        Bundle parameters = new Bundle();
-        parameters.putString("message", "Just checked in -- via Enefsy");
-        parameters.putString("place", venueId);
-        parameters.putString("description", "Enefsy powered check-in");
-        mAsyncFacebookRunner.request("me/feed", parameters, "POST", 
-        		new PostRequestListener(), null);        
+		new FacebookCheckinTask(venueId).execute();     
 	}
 
 	
@@ -844,5 +842,39 @@ public class FacebookActivity extends Activity {
         + "73149fb2232a10d247663b26a9031e15f84bc1c74d141ff98a02d76f85b2c8ab2"
         + "571b6469b232d8e768a7f7ca04f7abe4a775615916c07940656b58717457b42bd"
         + "928a2";
+    
+    
+    private class FacebookCheckinTask extends AsyncTask<Uri, Void, String> {
+ 		 		
+		private String venueId;
 
+		public FacebookCheckinTask(String venueId) {
+			super();
+			this.venueId = venueId;
+		}
+
+ 		protected void onPreExecute() {
+ 			mProgressDialog.setMessage("Checking in...");
+     		mProgressDialog.show();			
+ 		}
+ 		
+ 		protected void onPostExecute(String s) {
+ 			mProgressDialog.dismiss();
+ 	    }
+
+ 		@Override
+ 		protected String doInBackground(Uri...params) {
+ 			try {
+ 		        Bundle parameters = new Bundle();
+ 		        parameters.putString("message", "Just checked in -- via Enefsy");
+ 		        parameters.putString("place", this.venueId);
+ 		        parameters.putString("description", "Enefsy powered check-in");
+ 		        request("me/feed", parameters, "POST");        
+ 				
+ 			} catch (Exception e) {
+ 				e.printStackTrace();
+ 			}
+ 			return null;
+ 		}
+     }
 }

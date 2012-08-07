@@ -38,7 +38,7 @@ public class FoursquareActivity extends Activity {
 	private FoursquareSession mSession;
 	private FoursquareDialog mDialog;
 	private FsqAuthListener mListener;
-	private ProgressDialog mProgress;
+	private ProgressDialog mProgressDialog;
 	private String mTokenUrl;
 	private String mAccessToken;
 	private String mCode;
@@ -84,8 +84,8 @@ public class FoursquareActivity extends Activity {
 		
 		mDialog	= new FoursquareDialog(context, url, listener);
 		
-		mProgress = new ProgressDialog(context);
-		mProgress.setCancelable(true);
+		mProgressDialog = new ProgressDialog(context);
+		mProgressDialog.setCancelable(true);
 		
 	}
 	
@@ -179,12 +179,12 @@ public class FoursquareActivity extends Activity {
 				if (msg.what == 0) {
 					saveAccessToken();
 				} else {
-					mProgress.dismiss();
+					mProgressDialog.dismiss();
 					
 					mListener.onFail("Failed to get access token");
 				}
 			} else {
-				mProgress.dismiss();
+				mProgressDialog.dismiss();
 				
 				mListener.onSuccess();
 			}
@@ -195,12 +195,12 @@ public class FoursquareActivity extends Activity {
 	private class FoursquareGetAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgress.setMessage("Opening Foursquare...");
-			mProgress.show();		
+			mProgressDialog.setMessage("Opening Foursquare...");
+			mProgressDialog.show();		
 		}
 		
 		protected void onPostExecute(Void result) {
-			mProgress.dismiss();
+			mProgressDialog.dismiss();
 		}
 		
 		@Override
@@ -249,8 +249,8 @@ public class FoursquareActivity extends Activity {
 	private class FoursquareSaveAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 
 		protected void onPreExecute() {
-			mProgress.setMessage("Saving settings...");
-			mProgress.show();
+			mProgressDialog.setMessage("Saving settings...");
+			mProgressDialog.show();
 		}
 				
 		@Override
@@ -289,7 +289,7 @@ public class FoursquareActivity extends Activity {
 		}
 		
 		protected void onPostExecute(Void result) {
-			mProgress.dismiss();
+			mProgressDialog.dismiss();
 	    }
 	}
 	
@@ -307,12 +307,12 @@ public class FoursquareActivity extends Activity {
 		}
 		
 		protected void onPreExecute() {
-			mProgress.setMessage("Checking you in...");
-    		mProgress.show();			
+			mProgressDialog.setMessage("Checking in...");
+    		mProgressDialog.show();			
 		}
 		
 		protected void onPostExecute(String s) {
-			mProgress.dismiss();
+			mProgressDialog.dismiss();
 	    }
 
 		@Override
