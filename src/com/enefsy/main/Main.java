@@ -27,10 +27,12 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import com.enefsy.foursquare.FoursquareActivity;
-import com.enefsy.twitter.TwitterActivity;
 
-/* Foursquare depdendencies */
+/* Foursquare dependency */
+import com.enefsy.foursquare.FoursquareActivity;
+
+/* Twitter dependency */
+import com.enefsy.twitter.TwitterActivity;
 
 @TargetApi(14)
 public class Main extends Activity implements DialogListener, OnClickListener {
