@@ -46,8 +46,8 @@ public class FoursquareActivity extends Activity {
 	/**
 	 * Callback url, as set in 'Manage OAuth Costumers' page (https://developer.foursquare.com/)
 	 */	
-	private static final String FOURSQUARE_CLIENT_ID = "4NOPZVJ4ILTBQLU1AYO2BX2QMUBCJCLL3RFF0UETEZOQW02W";
-	private static final String FOURSQUARE_CLIENT_SECRET = "UAE5UZZ0KMDPTWOSYHU1R1UA3JX4NJDHO1HY5HWL3TJHVPQ1";
+	private static final String FOURSQUARE_CLIENT_ID = "C5PUFIZSZXKUPRP2PXFIA5C2UITZJ5N0KUNDXIUDDV1EVUX4";
+	private static final String FOURSQUARE_CLIENT_SECRET = "UAKCECXTCJHGJ34VASJFSEY4LL2QSRAKNETWA4MWLDCFKJHS";
 	private static final String FOURSQUARE_REDIRECT_URL = "http://www.enefsy.com";
 
 	public static final String CALLBACK_URL = "http://www.enefsy.com";
@@ -199,7 +199,7 @@ public class FoursquareActivity extends Activity {
 	private class FoursquareGetAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgressDialog.setMessage("Opening Foursquare...");
+			mProgressDialog.setMessage("Loading...");
 			mProgressDialog.show();		
 		}
 		

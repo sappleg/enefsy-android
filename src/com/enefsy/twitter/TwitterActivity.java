@@ -32,8 +32,8 @@ import java.net.URL;
 
 public class TwitterActivity {
 
-	private static final String TWITTER_CONSUMER_KEY = "7yqQQggvKFcb8U3CYmiOQ";
-	private static final String TWITTER_SECRET_KEY = "61MYne9XJphKQefGnZTWIBvLmZiT8AMV948DkjZYY";
+	private static final String TWITTER_CONSUMER_KEY = "ErlKpZJEGt6P3VlVLqXebg";
+	private static final String TWITTER_SECRET_KEY = "cW0gF10jOMrdzWvNEiuBvHCidRdxRZmm6mbajbcv8";
 	public static final String TWITTER_AUTH_URL = "http://twitter.com/oauth/authorize";
 	public static final String TWITTER_REQUEST_URL = "http://twitter.com/oauth/request_token";
 	public static final String TWITTER_TOKEN_URL = "http://twitter.com/oauth/access_token";

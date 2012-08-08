@@ -874,7 +874,7 @@ public class FacebookActivity extends Activity {
  		protected String doInBackground(Uri...params) {
  			try { 				
  		        Bundle parameters = new Bundle();
- 		        parameters.putString("message", "Just checked in -- via Enefsy");
+// 		        parameters.putString("message", "Just checked in -- via Enefsy");
  		        parameters.putString("place", this.venueId);
  		        parameters.putString("description", "Enefsy powered check-in");
  		        request("me/feed", parameters, "POST");        
