@@ -1,66 +1,83 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" >
 
         <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
 
             <ImageButton
                 android:id="@+id/facebook_button"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/fb_button_desc"
                 android:src="@drawable/facebook_button"
-                android:background="?android:attr/selectableItemBackground" />
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_weight="0.5" />
 
             <ImageButton
                 android:id="@+id/twitter_button"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/tw_button_desc"
                 android:src="@drawable/twitter_button"
-                android:background="?android:attr/selectableItemBackground" />
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_weight="0.5" />
 
         </TableRow>
 
         <TableRow
             android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
 
             <ImageButton
                 android:id="@+id/foursquare_button"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/fsq_button_desc"
                 android:src="@drawable/foursquare_button"
-                android:background="?android:attr/selectableItemBackground" />
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_weight="0.5" />
+
+            <ImageButton
+                android:id="@+id/google_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/google_button_desc"
+                android:src="@drawable/google_button"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_weight="0.5" />
 
         </TableRow>
     </TableLayout>
     
-    <TextView 
-        android:id="@+id/uid_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textSize="25sp" />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	xmlns:tools="http://schemas.android.com/tools"
+    	android:id="@+id/main2"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:layout_alignParentBottom="true" >
     
-    <Button
-        android:id="@+id/qr_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:contentDescription="@string/qr_button_desc"
-        android:text="@string/qr_button" />
-
-</LinearLayout>
+    	<TextView 
+        	android:id="@+id/venue_view"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:textSize="25sp"
+    		android:gravity="center_vertical|center_horizontal" >
+    	</TextView>
+	</LinearLayout>
+	
+</RelativeLayout>

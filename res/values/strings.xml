@@ -9,9 +9,11 @@
     <string name="fb_button_desc">Facebook check-in button</string>
     <string name="tw_button_desc">Twitter tweet button</string>
     <string name="fsq_button_desc">Foursquare check-in button</string>
+    <string name="google_button_desc">Google check-in button</string>
     <string name="qr_button_desc">QR Scanner button</string>
     <string name="qr_button">Scan QR Code</string>
     <string name="launch_desc">Launch screen</string>
     <string name="progress">Connecting to Enefsy&#8230;</string>
+    <string name="prompt">Tap to Enefsy Tag\nOr Scan QR Code</string>
     
 </resources>

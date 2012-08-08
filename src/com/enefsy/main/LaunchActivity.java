@@ -79,7 +79,7 @@ public class LaunchActivity extends Activity {
 	    	venueDataMap.put("uid", intent.getStringExtra("uid"));
 	        new GetVenueDataTask().execute();
 	    } else {
-	    	Intent newIntent = new Intent(getApplicationContext(), Main.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    	Intent newIntent = new Intent(getApplicationContext(), PromptActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    	newIntent.putExtra("queried", false);
 			startActivity(newIntent);
 	    }
