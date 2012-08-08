@@ -288,7 +288,7 @@ public final class R {
         public static final int share=0x7f03000c;
     }
     public static final class menu {
-        public static final int activity_main=0x7f0b0000;
+        public static final int main=0x7f0b0000;
     }
     public static final class raw {
         public static final int beep=0x7f050000;
