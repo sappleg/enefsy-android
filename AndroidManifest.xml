@@ -58,6 +58,10 @@
 		</activity>
         
        <activity
+           android:name=".FacebookActivity" >
+       </activity>
+
+       <activity
             android:name=".FoursquareActivity" >
        </activity>        
 

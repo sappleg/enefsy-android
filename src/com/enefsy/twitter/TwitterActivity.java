@@ -32,6 +32,14 @@ import java.net.URL;
 
 public class TwitterActivity {
 
+	private static final String TWITTER_CONSUMER_KEY = "7yqQQggvKFcb8U3CYmiOQ";
+	private static final String TWITTER_SECRET_KEY = "61MYne9XJphKQefGnZTWIBvLmZiT8AMV948DkjZYY";
+	public static final String TWITTER_AUTH_URL = "http://twitter.com/oauth/authorize";
+	public static final String TWITTER_REQUEST_URL = "http://twitter.com/oauth/request_token";
+	public static final String TWITTER_TOKEN_URL = "http://twitter.com/oauth/access_token";
+	public static final String TWITTER_CALLBACK_URL = "http://www.enefsy.com";
+	private static final String TAG = "TwitterActivity";
+	
 	private Twitter mTwitter;
 	private TwitterSession mSession;
 	private AccessToken mAccessToken;
@@ -42,17 +50,9 @@ public class TwitterActivity {
 	private Context context;
 	private boolean mInit = true;
 	private String tokenedUrl;
+
 	private String status;
 
-	private static final String TWITTER_CONSUMER_KEY = "7yqQQggvKFcb8U3CYmiOQ";
-	private static final String TWITTER_SECRET_KEY = "61MYne9XJphKQefGnZTWIBvLmZiT8AMV948DkjZYY";
-	public static final String TWITTER_AUTH_URL = "http://twitter.com/oauth/authorize";
-	public static final String TWITTER_REQUEST_URL = "http://twitter.com/oauth/request_token";
-	public static final String TWITTER_TOKEN_URL = "http://twitter.com/oauth/access_token";
-	public static final String TWITTER_CALLBACK_URL = "http://www.enefsy.com";
-
-	private static final String TAG = "TwitterActivity";
-	
 	
 	public TwitterActivity(Context context) {
 
@@ -126,7 +126,8 @@ public class TwitterActivity {
 	}
 	
 	
-	public void authorize() {		
+	public void authorizeAndUpdateStatus(String status) {		
+		this.status = status;
 		new TwitterAuthorizeTask().execute();
 	}
 
@@ -194,7 +195,7 @@ public class TwitterActivity {
 	private class TwitterAuthorizeTask extends AsyncTask<Uri, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgressDialog.setMessage("Opening Twitter...");
+			mProgressDialog.setMessage("Loading...");
 			mProgressDialog.show();		
 		}
 		
@@ -243,7 +244,9 @@ public class TwitterActivity {
 		}
 		
 		protected void onPostExecute(Void result) {
+			// After saving the user's Twitter access token, tweet the user's location
 			mProgressDialog.dismiss();
+			updateStatus(status);
 		}
 		
 		@Override

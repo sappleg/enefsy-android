@@ -1,13 +1,13 @@
-package com.enefsy.main;
+package com.enefsy.facebook;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import com.enefsy.facebook.FacebookError;
-
-
 import com.enefsy.facebook.AsyncFacebookRunner.RequestListener;
+
+
+
 
 public class PostRequestListener implements RequestListener {
 

@@ -38,7 +38,7 @@ public class FoursquareActivity extends Activity {
 	private FoursquareSession mSession;
 	private FoursquareDialog mDialog;
 	private FsqAuthListener mListener;
-	private ProgressDialog mProgress;
+	private ProgressDialog mProgressDialog;
 	private String mTokenUrl;
 	private String mAccessToken;
 	private String mCode;
@@ -57,23 +57,27 @@ public class FoursquareActivity extends Activity {
 	
 	private static final String TAG = "FoursquareActivity";
 	
-	
+    private String venueId;
+
+    
 	public FoursquareActivity(Context context) {
 				
-		mSession		= new FoursquareSession(context);
-				
-		mAccessToken	= mSession.getAccessToken();
+		mSession = new FoursquareSession(context);
+		mAccessToken = mSession.getAccessToken();
 		
-		mTokenUrl		= TOKEN_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&client_secret=" + FOURSQUARE_CLIENT_SECRET
+		if (mAccessToken != null)
+			initializeApi();
+
+		mTokenUrl = TOKEN_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&client_secret=" + FOURSQUARE_CLIENT_SECRET
 						+ "&redirect_uri=" + CALLBACK_URL;
 		
-		String url		= AUTH_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&redirect_uri=" + CALLBACK_URL;
+		String url = AUTH_URL + "&client_id=" + FOURSQUARE_CLIENT_ID + "&redirect_uri=" + CALLBACK_URL;
 
 		FsqDialogListener listener = new FsqDialogListener() {
 			@Override
 			public void onComplete(String code) {
 				mCode = code;
-				getAccessToken();					
+				getAccessToken();
 			}
 			
 			@Override
@@ -82,10 +86,9 @@ public class FoursquareActivity extends Activity {
 			}
 		};
 		
-		mDialog			= new FoursquareDialog(context, url, listener);
-
-		mProgress		= new ProgressDialog(context);
-		mProgress.setCancelable(true);
+		mDialog	= new FoursquareDialog(context, url, listener);
+		mProgressDialog = new ProgressDialog(context);
+		mProgressDialog.setCancelable(true);
 		
 	}
 	
@@ -133,7 +136,8 @@ public class FoursquareActivity extends Activity {
 	}
 	
 	
-	public void authorize() {
+	public void authorizeAndCheckIn(String venueId) {
+		this.venueId = venueId;
 		mDialog.show();
 	}	
 	
@@ -179,12 +183,12 @@ public class FoursquareActivity extends Activity {
 				if (msg.what == 0) {
 					saveAccessToken();
 				} else {
-					mProgress.dismiss();
+					mProgressDialog.dismiss();
 					
 					mListener.onFail("Failed to get access token");
 				}
 			} else {
-				mProgress.dismiss();
+				mProgressDialog.dismiss();
 				
 				mListener.onSuccess();
 			}
@@ -195,12 +199,12 @@ public class FoursquareActivity extends Activity {
 	private class FoursquareGetAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 		
 		protected void onPreExecute() {
-			mProgress.setMessage("Opening Foursquare...");
-			mProgress.show();		
+			mProgressDialog.setMessage("Opening Foursquare...");
+			mProgressDialog.show();		
 		}
 		
 		protected void onPostExecute(Void result) {
-			mProgress.dismiss();
+			mProgressDialog.dismiss();
 		}
 		
 		@Override
@@ -249,8 +253,8 @@ public class FoursquareActivity extends Activity {
 	private class FoursquareSaveAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 
 		protected void onPreExecute() {
-			mProgress.setMessage("Saving settings...");
-			mProgress.show();
+			mProgressDialog.setMessage("Saving settings...");
+			mProgressDialog.show();
 		}
 				
 		@Override
@@ -289,7 +293,11 @@ public class FoursquareActivity extends Activity {
 		}
 		
 		protected void onPostExecute(Void result) {
-			mProgress.dismiss();
+			// Initialize the Foursquare API using the user's authorization token
+			// and check the user in
+			mProgressDialog.dismiss();
+    		initializeApi();
+			checkIn(venueId);
 	    }
 	}
 	
@@ -307,12 +315,12 @@ public class FoursquareActivity extends Activity {
 		}
 		
 		protected void onPreExecute() {
-			mProgress.setMessage("Checking you in...");
-    		mProgress.show();			
+			mProgressDialog.setMessage("Checking in...");
+    		mProgressDialog.show();			
 		}
 		
 		protected void onPostExecute(String s) {
-			mProgress.dismiss();
+			mProgressDialog.dismiss();
 	    }
 
 		@Override
