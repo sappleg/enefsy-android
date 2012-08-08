@@ -62,6 +62,7 @@ public class FacebookActivity extends Activity {
     public static final String EXPIRES = "expires_in";
     public static final String SINGLE_SIGN_ON_DISABLED = "service_disabled";
 	private static final String FACEBOOK_CLIENT_ID = "287810317993311";
+    private static final String[] FBOOK_PERMISSIONS = { "publish_checkins, publish_stream" };
 
     public static final int FORCE_DIALOG_AUTH = -1;
 
@@ -76,11 +77,12 @@ public class FacebookActivity extends Activity {
     private String mAccessToken = null;
     private long mAccessExpires = 0;
 
-    private String[] mAuthPermissions;
     private int mAuthActivityCode;
     private DialogListener mAuthDialogListener;
     private Context mContext;
     private ProgressDialog mProgressDialog;
+    
+    private String venueId;
     
     
     
@@ -98,7 +100,10 @@ public class FacebookActivity extends Activity {
     	mAuthDialogListener = new DialogListener() {
     		@Override
             public void onComplete(Bundle values) {
+    			// Store the token obtained from the authorization dialog
+    			// and check the user in
         		mSession.storeAccessToken(mAccessToken);
+        		checkin(venueId);
             }
 
 			@Override
@@ -163,8 +168,11 @@ public class FacebookActivity extends Activity {
      * as the activityCode parameter in your call to authorize().
      *
      */
-    public void authorize() {
-        startDialogAuth(new String[] { "publish_checkins, publish_stream" });
+    public void authorizeAndCheckin(String venueId) {
+    	// Set the venueId so that when the authorization dialog calls its onComplete
+    	// it checks the user in
+    	this.venueId = venueId;
+        startDialogAuth();
     }
 
 
@@ -227,10 +235,10 @@ public class FacebookActivity extends Activity {
      *            A list of permissions required for this application. If you do
      *            not require any permissions, pass an empty String array.
      */
-	private void startDialogAuth(String[] permissions) {
+	private void startDialogAuth() {
         Bundle params = new Bundle();
-        if (permissions.length > 0) {
-            params.putString("scope", TextUtils.join(",", permissions));
+        if (FBOOK_PERMISSIONS.length > 0) {
+            params.putString("scope", TextUtils.join(",", FBOOK_PERMISSIONS));
         }
         CookieSyncManager.createInstance(mContext);
         dialog(mContext, LOGIN, params, new DialogListener() {
@@ -299,7 +307,7 @@ public class FacebookActivity extends Activity {
                             || error.equals("AndroidAuthKillSwitchException")) {
                         Util.logd("Facebook-authorize", "Hosted auth currently "
                             + "disabled. Retrying dialog auth...");
-                        startDialogAuth(mAuthPermissions);
+                        startDialogAuth();
                     } else if (error.equals("access_denied")
                             || error.equals("OAuthAccessDeniedException")) {
                         Util.logd("Facebook-authorize", "Login canceled by user.");
@@ -864,7 +872,7 @@ public class FacebookActivity extends Activity {
 
  		@Override
  		protected String doInBackground(Uri...params) {
- 			try {
+ 			try { 				
  		        Bundle parameters = new Bundle();
  		        parameters.putString("message", "Just checked in -- via Enefsy");
  		        parameters.putString("place", this.venueId);

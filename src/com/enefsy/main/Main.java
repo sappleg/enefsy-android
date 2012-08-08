@@ -35,11 +35,7 @@ public class Main extends Activity implements OnClickListener {
 	/* Button to invoke QR code scan */
 	private Button qr_button;
 
-	/* Creates Facebook Objects with the Enefsy Facebook App ID */
 	private FacebookActivity facebookActivity;
-//	private AsyncFacebookRunner asyncFacebookClient;
-
-	/* Foursquare activity object */
 	private FoursquareActivity foursquareActivity;
 	private TwitterActivity twitterActivity;
 	
@@ -138,7 +134,7 @@ public class Main extends Activity implements OnClickListener {
         	if (!facebookActivity.hasAccessToken()) {
         		/* If the phone is connected to the internet, try to authorize the user */
         		if (isNetworkConnected())
-        			facebookActivity.authorize();
+        			facebookActivity.authorizeAndCheckin(getVenueDataMapValue("facebookid"));
 
         		/* If no internet connection is available, alert user */
         		else
@@ -166,23 +162,25 @@ public class Main extends Activity implements OnClickListener {
 
     		if (!twitterActivity.hasAccessToken()) {
         		/* If the phone is connected to the internet, try to authorize the user */
-        		if (isNetworkConnected())
-        			twitterActivity.authorize();
-
+        		if (isNetworkConnected()) {
+        			twitterActivity.authorizeAndUpdateStatus("I'm at " + getVenueDataMapValue("twitterhandle") + " -- via @enefsy");
+        		}
         		/* If no internet connection is available, alert user */
-        		else
+        		else {
         			Toast.makeText(this, "Unable to connect to Twitter. Please check your network settings.", Toast.LENGTH_LONG).show();
+        		}
     		}
 
     		else {
         		/* If the phone is connected to the internet, try to authorize the user */
-        		if (isNetworkConnected())
+        		if (isNetworkConnected()) {
 					twitterActivity.updateStatus("I'm at " + getVenueDataMapValue("twitterhandle") + " -- via @enefsy");
-
+        		}
         		/* If no internet connection is available, alert user */
-        		else
+        		else {
         			Toast.makeText(this, "Unable to connect to Twitter. Please check your network settings.", Toast.LENGTH_LONG).show();
-    		}        	
+        		}
+    		}
         }
         
         /**********************************************************************
@@ -199,18 +197,20 @@ public class Main extends Activity implements OnClickListener {
         	if (!foursquareActivity.hasAccessToken()) {
         		/* If the phone is connected to the internet, try to authorize the user */
         		if (isNetworkConnected())
-        			foursquareActivity.authorize();
+        			foursquareActivity.authorizeAndCheckIn(getVenueDataMapValue("foursquareid"));
         		
         		/* If no internet connection is available, alert user */
         		else
         			Toast.makeText(this, "Unable to connect to Foursquare. Please check your network settings.", Toast.LENGTH_LONG).show();
-        	} else { /* Otherwise the user has already granted us permissions so check them in */
+        	} 
+        	else { 
+        		/* Otherwise the user has already granted us permissions so check them in */
         		/* If the phone is connected to the internet, try to authorize the user */
         		if (isNetworkConnected()) {
-	        		foursquareActivity.initializeApi();
 	        		try {
 	        			foursquareActivity.checkIn(getVenueDataMapValue("foursquareid")); 
-	        		} catch(Exception e) {
+	        		} 
+	        		catch(Exception e) {
 	        			e.printStackTrace();
 	        		}
         		}
