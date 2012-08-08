@@ -15,5 +15,6 @@
     <string name="launch_desc">Launch screen</string>
     <string name="progress">Connecting to Enefsy&#8230;</string>
     <string name="prompt">Tap to Enefsy Tag\nOr Scan QR Code</string>
+    <string name="map_tmp">placeholder for future map</string>
     
 </resources>

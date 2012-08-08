@@ -3,8 +3,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/enefsy_green" >
+    android:orientation="vertical" >
 
     <TableLayout
         android:layout_width="match_parent"
@@ -21,10 +20,11 @@
                 android:id="@+id/facebook_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/fb_button_desc"
-                android:src="@drawable/facebook_button"
+                android:layout_weight="0.5"
+                android:adjustViewBounds="false"
                 android:background="@null"
-                android:layout_weight="0.5" />
+                android:contentDescription="@string/fb_button_desc"
+                android:src="@drawable/facebook_button" />
 
             <ImageButton
                 android:id="@+id/twitter_button"
