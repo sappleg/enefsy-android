@@ -159,6 +159,7 @@ public final class R {
         public static final int blue=0x7f070023;
         public static final int contents_text=0x7f070000;
         public static final int encode_view=0x7f070001;
+        public static final int enefsy_green=0x7f0700b3;
         public static final int fuchsia=0x7f070018;
         public static final int gray=0x7f07001b;
         public static final int green=0x7f070022;
