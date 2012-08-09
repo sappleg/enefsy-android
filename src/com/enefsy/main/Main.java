@@ -5,6 +5,7 @@ import java.util.Map;
 
 /* Android package */
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
