@@ -157,6 +157,6 @@
 		<color name="DarkBlue">#00008B</color>
 		<color name="Navy">#000080</color>
 		<color name="Black">#000000</color>
-		<color name="opaque_back">#80000000</color>
+		<color name="opaque_back">#99000000</color>
 		<color name="enefsy_green">#7FAF1B</color>
 	</resources>

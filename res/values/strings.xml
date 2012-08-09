@@ -2,7 +2,9 @@
 
     <string name="app_name">Enefsy</string>
     <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
+    <string name="main_menu_home">Home</string>
+    <string name="main_menu_map">Map</string>
+    <string name="main_menu_deals">Deals</string>
     <string name="facebook_button">Facebook</string>
     <string name="twitter_button">Twitter</string>
     <string name="foursquare_button">Foursquare</string>
