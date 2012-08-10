@@ -3,7 +3,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@color/enefsy_green" >
 
     <TableLayout
         android:layout_width="match_parent"
@@ -22,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/fb_button_desc"
                 android:src="@drawable/facebook_button"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@null"
                 android:layout_weight="0.5" />
 
             <ImageButton
@@ -31,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/tw_button_desc"
                 android:src="@drawable/twitter_button"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@null"
                 android:layout_weight="0.5" />
 
         </TableRow>
@@ -48,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/fsq_button_desc"
                 android:src="@drawable/foursquare_button"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@null"
                 android:layout_weight="0.5" />
 
             <ImageButton
@@ -57,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/google_button_desc"
                 android:src="@drawable/google_button"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@null"
                 android:layout_weight="0.5" />
 
         </TableRow>

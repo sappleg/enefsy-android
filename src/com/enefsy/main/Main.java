@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -190,6 +191,17 @@ public class Main extends Activity implements OnClickListener {
         		else
         			Toast.makeText(this, "Unable to connect to Foursquare. Please check your network settings.", Toast.LENGTH_LONG).show();
         	}
+        }
+        
+        else if (v == google_button) {
+	    
+        	Intent shareIntent = ShareCompat.IntentBuilder.from(Main.this)
+	        		   .setText("Checking in via Enefsy")
+	        		   .setType("text/plain")
+	        		   .getIntent()
+	        		   .setPackage("com.google.android.apps.plus");
+	
+	        		startActivity(shareIntent);
         }
     }
     
