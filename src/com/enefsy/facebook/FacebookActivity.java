@@ -862,7 +862,8 @@ public class FacebookActivity extends Activity {
 		}
 
  		protected void onPreExecute() {
- 			mProgressDialog.setMessage("Checking in...");
+ 			String msg = "Checking in...";
+ 			mProgressDialog.setMessage(msg);
      		mProgressDialog.show();			
  		}
  		
@@ -874,8 +875,8 @@ public class FacebookActivity extends Activity {
  		protected String doInBackground(Uri...params) {
  			try { 				
  		        Bundle parameters = new Bundle();
-// 		        parameters.putString("message", "Just checked in -- via Enefsy");
- 		        parameters.putString("place", this.venueId);
+ 		        parameters.putString("message", "");
+ 		        parameters.putString("place", this.venueId); 		        
  		        parameters.putString("description", "Enefsy powered check-in");
  		        request("me/feed", parameters, "POST");        
  				

@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/main_menu_home"
+        android:title="@string/main_menu_home"
+        android:showAsAction="withText" />
+    
+    <item android:id="@+id/main_menu_map"
+        android:title="@string/main_menu_map"
+        android:showAsAction="withText" />
+    
+    <item android:id="@+id/main_menu_deals"
+        android:title="@string/main_menu_deals"
+        android:showAsAction="withText" />
+</menu>

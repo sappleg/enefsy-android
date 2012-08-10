@@ -315,7 +315,8 @@ public class FoursquareActivity extends Activity {
 		}
 		
 		protected void onPreExecute() {
-			mProgressDialog.setMessage("Checking in...");
+			String msg = "Checking in...";
+			mProgressDialog.setMessage(msg);
     		mProgressDialog.show();			
 		}
 		

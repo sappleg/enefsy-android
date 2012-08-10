@@ -2,7 +2,9 @@
 
     <string name="app_name">Enefsy</string>
     <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
+    <string name="main_menu_home">Home</string>
+    <string name="main_menu_map">Map</string>
+    <string name="main_menu_deals">Deals</string>
     <string name="facebook_button">Facebook</string>
     <string name="twitter_button">Twitter</string>
     <string name="foursquare_button">Foursquare</string>
@@ -15,5 +17,6 @@
     <string name="launch_desc">Launch screen</string>
     <string name="progress">Connecting to Enefsy&#8230;</string>
     <string name="prompt">Tap to Enefsy Tag\nOr Scan QR Code</string>
+    <string name="map_tmp">placeholder for future map</string>
     
 </resources>
