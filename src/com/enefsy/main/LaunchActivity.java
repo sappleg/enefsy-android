@@ -119,7 +119,7 @@ public class LaunchActivity extends Activity {
     		final ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
     		nameValuePairs.add(new BasicNameValuePair("id",venueDataMap.get("uid")));
     		nameValuePairs.add(new BasicNameValuePair("username","enefsy"));
-    		nameValuePairs.add(new BasicNameValuePair("password","GTgolfer1990"));
+    		nameValuePairs.add(new BasicNameValuePair("password","OriginLLNL2012"));
     		String venueData = "";
     		InputStream is = null;
 		    	
