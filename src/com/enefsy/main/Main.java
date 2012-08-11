@@ -3,6 +3,10 @@ package com.enefsy.main;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.enefsy.facebook.FacebookActivity;
+import com.enefsy.foursquare.FoursquareActivity;
+import com.enefsy.twitter.TwitterActivity;
+
 /* Android package */
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -18,10 +22,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.enefsy.facebook.FacebookActivity;
-import com.enefsy.twitter.TwitterActivity;
-import com.enefsy.foursquare.FoursquareActivity;
 
 @TargetApi(14)
 public class Main extends Activity implements OnClickListener {
